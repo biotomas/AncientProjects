@@ -1,0 +1,61 @@
+#include "Camera.h"
+
+const D3DXVECTOR3& Camera::get_position()
+{
+	return vEyePt;
+}
+
+Camera::Camera()
+{
+	mydevice = DirectXGraphics::getInstance()->getDevice();
+	vUpVec = D3DXVECTOR3(0,1,0);
+	mytank = NULL;
+}
+
+void Camera::SetCameraExplicit(	D3DXVECTOR3& eyept, D3DXVECTOR3& lookatpt, D3DXVECTOR3& upvec)
+{
+	vEyePt = eyept;
+	vLookatPt = lookatpt;
+	vUpVec = upvec;
+}
+
+void Camera::SetDistHeight(float dist, float cam_height, float look_height)
+{
+	this->dist = dist;
+	this->cam_height = cam_height;
+	this->look_height = look_height;
+}
+
+void Camera::ActivateThisCamera()
+{
+	
+    D3DXMATRIXA16 matView;
+    D3DXMatrixLookAtLH( &matView, &vEyePt, &vLookatPt, &vUpVec );
+	mydevice->SetTransform( D3DTS_VIEW, &matView );
+}
+
+void Camera::UpdateCamera()
+{
+	if(mytank)
+	{
+		vLookatPt = mytank->get_position();
+		vLookatPt.y += look_height;
+		vEyePt = vLookatPt - dist*mytank->get_orientation();
+		vEyePt.y += cam_height;
+	}
+}
+
+void Camera::FollowTank(Tank* tank)
+{
+	mytank = tank;
+}
+
+void Camera::MoveCamera(D3DXVECTOR3 &move)
+{
+	vEyePt+=move;
+	vLookatPt+=move;
+}
+
+Camera::~Camera(void)
+{
+}

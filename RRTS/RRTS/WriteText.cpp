@@ -1,0 +1,70 @@
+#include "WriteText.h"
+#define _CRT_NO_SECURE_WARNINGS
+#include <stdio.h>
+
+static char* buff = new char[100];
+
+std::string MyIntToString(int num)
+{
+	sprintf(buff, "%d", num);
+	std::string retval(buff);
+	return retval;
+}
+
+std::string MyFloatToString(float num)
+{
+	sprintf(buff, "%e", num);
+	std::string retval(buff);
+	return retval;
+}
+
+void WriteText::set_text(std::string text)
+{
+	this->text = text;
+}
+
+void WriteText::set_text(int num)
+{	
+	this->text = MyIntToString(num);
+}
+
+void WriteText::set_text(float num)
+{	
+	this->text = MyFloatToString(num);
+}
+
+
+void WriteText::set_color(D3DCOLOR color)
+{
+	this->color = color;
+}
+
+void WriteText::set_font(int height, UINT width, char* facename)
+{
+	LPDIRECT3DDEVICE9 device = DirectXGraphics::getInstance()->getDevice();
+
+	if(font)
+		font->Release();
+	font = NULL;
+	D3DXCreateFont(device, height, width, FW_NORMAL, 1, false, DEFAULT_CHARSET, OUT_DEFAULT_PRECIS,
+		DEFAULT_QUALITY, FF_DONTCARE || DEFAULT_PITCH, facename, &font);
+}
+
+void WriteText::set_position(DWORD x, DWORD y)
+{
+	rect.left = x;
+	rect.top = y;
+	rect.right = x+1;
+	rect.bottom = y+1;
+}
+
+void WriteText::render(LPDIRECT3DDEVICE9)
+{
+	font->DrawTextA(NULL, text.c_str(), -1, &rect, DT_NOCLIP, color);
+}
+
+WriteText::~WriteText(void)
+{
+	if (font)
+		font->Release();
+}

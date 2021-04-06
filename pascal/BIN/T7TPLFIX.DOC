@@ -1,0 +1,194 @@
+
+T7TplFix
+========
+
+
+Summary
+-------
+
+Patch for Turbo Pascal 7.01 run time library (TURBO.TPL).
+
+Fixes the "Run Time Error 200" bug in the delay initialisation
+that occurs on fast PC's (Pentium II with 233 MHz and above).
+
+
+License
+-------
+
+This program is free to use but comes without warranty of any kind,
+use it on your own risk. Please send me an e-mail if you used this
+as motivation to spend time in helping others again.
+Donations are of course welcome.
+
+
+Use
+---
+
+Execute the program in the directory that contains the
+original run time library file TURBO.TPL of Turbo Pascal 7.01.
+
+Then backup your old TURBO.TPL and rename the newly created
+TURBOTPL.NEW to TURBO.TPL
+
+Now recompile your programs.
+
+
+Advantages
+----------
+
+Advantages of this patch program
+
+- ONLY the two modifications described below are applied,
+  all other contents of the Run Time Library remain completely
+  unchanged. Most other fixes for this problem do lot's of undocumented
+  changes to the SYSTEM.TPU, maybe it's just a strange effect of
+  recompilation but I'm not sure about that because changing only
+  CRT does not require any thanges in SYSTEM.
+
+- Patches version 7.01 unlike the original TPL distributed by c't,
+  that was based on 7.0. The older version had several bugs
+  that are reintroduced in this process.
+
+- Does not require the run time library source that is only available
+  if you have purchased the more expensive Borland Pascal
+  instead of the smaller Turbo Pascal.
+
+
+Details
+-------
+
+The delay counter is changed from 16 to 32 bits to prevent
+the overrun on fast PC's and the delay initialisation is changed
+to run with most interrupts disabled to improve delay precision.
+
+The patch being applied is the one as distributed by German c't magazine.
+The differences are listed in the included file CRT.DIF
+
+
+FAQ
+---
+
+Frequently asked questions (and answers).
+Please read these *before* asking me any questions!
+
+
+- Where can I find more informations?
+
+  See the info text and the list of other web pages on
+  http://www.brain.uni-freiburg.de/~klaus/pascal/runerr200/
+
+
+- Is an official fix for this bug available from Borland / Inprise?
+
+  Unfortunately not! If you think they should provide one,
+  please send an email to customer-service@inprise.com
+  and tell them so.
+
+
+- Is a fix available for compiled programs of which I don't have source?
+
+  Yes if that program does not require precise timing,
+  otherwise probably not.
+  See the web page mentioned at question 'more informations'.
+
+
+- Why do you not simply distribute the patched file TURBO.TPL ?
+
+  It is copyrighted, distributing that file may be illegal.
+  I asked Inprise for permission but they sent an inappropriate
+  canned reply without having read my mail. I'll try again.
+
+
+- Is a patch available the older version 7.0 ?
+
+  I didn't create one because version 7.0 has several bugs.
+  Contact Inprise (formerly Borland) and ask for an update to 7.01
+  (or replacement disks for 7.0 if they refuse to know about 7.01)
+  or demand a free bugfix, for example downloadable bug-free files
+  TURBO.TPL and TPP.TPL from the Inprise Web page.
+
+
+- I get the error "file TURBO.TPL is not original or not version 7.01"
+
+  Reinstall TURBO.TPL from your original disk and try again
+  (if you have made custom changes see below).
+  If the problem persists, check if you have version 7.0 or 7.01
+  (if you don't know how, see next question).
+
+
+- How can I find out if I have Turbo Pascal version 7.0 or 7.01
+
+  Look at the time stamp of the files in your Turbo Pascal directory
+  or on the original disks obtained from Borland.
+  If the time is 07:00, then you have version 7.0
+  If it's 07:01, then you have version 7.01.
+
+
+- How can I get a fix for TPP.TPL, the run time library for protected mode?
+
+  You can create it yourself because if you have TPP.TPL, then you
+  also have the source of the run time library (both are included
+  in Borland Pascal 7, both are not included in Turbo Pascal 7).
+  See the changes in the file CRT.DIF, apply them to CRT.ASM
+  and recompile the run time library (run MAKE in the RTL directory).
+
+
+- Is a patch also required for the Windows run time library?
+
+  Good question, I don't know. Probably not.
+  If yes, then the solution is the same as for protected mode (see above).
+
+
+- What exactly does this program change in the run time library?
+
+  See the section Details above and check the included file CRT.DIF
+
+
+- Is the source of the patch program available so I can tell
+  myself what exactly it changes?
+
+  I can send you the source if you really want, but it won't tell
+  you much because it's a general purpose patch program that reads
+  a data file to know what exactly to patch and how. All information
+  is in the data file. To see what this does simply compare your
+  TURBO.TPL before and after patching.
+
+
+- How comes that I find a huge number of changes in my TURBO.TPL
+  after applying the patch?
+
+  Take into account that several bytes are *inserted*, so the rest of
+  the contents is moved to make space inbetween. For a thorough
+  comparison, please first extract the TPU files from the TPL and
+  compare them separately. You will find all files except CRT.TPU being
+  completely unchanged! Now look at CRT.TPU. Ignore the changed link and
+  debug informations at the beginning and the end of the file and look
+  for changed and a few inserted bytes in two places (delay
+  initialization and delay call) about in the middle. Behind that you'll
+  find all other bytes moved and only few single more bytes changed,
+  probably because they contain jump addresses and those have changed
+  due to the move.
+
+
+- My copy of TURBO.TPL does contain custom changes and I want to keep them
+
+  If your changes are not in CRT.TPU, then let this program patch
+  a copy of the original TURBO.TPL, extract the changed CRT.TPU and
+  put that into the TURBO.TPL with your changes. Otherwise you must
+  re-apply your changes to CRT.TPU after using this program.
+
+
+- How does this program check if the TURBO.TPL is the correct one ?
+
+  It calculates the standard CRC-32 checksum of the file
+
+
+- Can I disable the validity check that is done on TURBO.TPL before patching?
+
+  No! Better don't try, the patch won't work correct with a modified file.
+  Don't blame me if you end up with a garbled run time library file!
+  If you get that error message, fix the problem instead of fiddling with
+  this patch program. The patch won't work correctly otherwise, believe me!
+
+
+- end -

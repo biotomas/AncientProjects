@@ -1,0 +1,803 @@
+uses crt,graph,games;
+type cerv = record
+     x,y,uhol:integer;
+     zvysx,zvysy,v:real;
+     exist,je:boolean;
+     pamat:-10..10;
+     farba,body,otac,boc,level:byte;
+     meno:string;
+     end;
+
+type pup = record
+     x,y:integer;
+     exist:boolean;
+     typ,zivot:byte;
+     obr:string;
+     end;
+
+type special = record
+     x,y:integer;
+     r:byte;
+     exist:boolean;
+     end;
+
+var i,j,poradie,pwrtimer:integer;
+    delaj,pocai,pocme:byte;
+    me,ai:array[1..5] of cerv;
+    pwr:array[1..4] of pup;
+    explod,stena:special;
+    zoznam:array[1..5] of string;
+    stri:string;
+
+procedure auttext(c:string;a,b:integer;farba:word);
+type pismeno=array[1..8,1..8] of boolean;
+var i,j,k,pom:byte;
+    x,y,v,err:integer;
+    pism:pismeno;
+    pole:array[1..5] of byte;
+    s:string[8];
+    f:file of pismeno;
+begin
+assign(f,'pismena.dat');
+reset(f);
+i:=0;
+x:=a;y:=b;
+repeat
+inc(i);
+val(c[i],v,err);
+setcolor(farba);
+if ((err <> 0) and (c[i] <> ' ')) or (c[i]='0')
+                              then
+                              begin
+                              outtextxy(x,y,c[i]);
+                              x:=x+8;
+                              end
+   else
+   if err =  0 then
+               begin
+               reset(f);
+               for j:=1 to v do read(f,pism);
+               for j:=1 to 8 do
+                   begin
+                   for k:=1 to 8 do
+                       begin
+                       if pism[j,k] then putpixel(x,y,farba);
+                       inc(y);
+                       end;
+                   y:=y-8;
+                   inc(x);
+                   end;
+               end
+   else x:=x+8;
+until i=length(c);
+close(f);
+end;
+
+procedure hranica;
+begin
+setfillstyle(1,white);
+bar(1,1,3,480);
+bar(1,1,640,4);
+bar(1,480,640,476);
+bar(640,1,637,480);
+end;
+
+function ziju:byte;
+var i,zije:byte;
+begin
+zije:=0;
+for i:=1 to 5 do
+    begin
+    if me[i].exist then inc(zije);
+    if ai[i].exist then inc(zije);
+    end;
+ziju:=zije;
+end;
+
+procedure oboduj(koho,ktoreho:byte); {koho 1 = me, koho 2 = ai}
+var i,j:byte;
+begin
+inc(poradie);
+if koho = 1 then inc(me[ktoreho].body,poradie);
+if koho = 2 then inc(ai[ktoreho].body,poradie);
+
+if (koho = 0) and (ktoreho = 0) then
+   begin
+   j:=0;
+   for i:=1 to 5 do
+       begin
+       if me[i].je then inc(j);
+       if ai[i].je then inc(j);
+       end;
+   i:=0;
+   repeat
+   inc(i);
+   if ai[i].exist then inc(ai[i].body,poradie);
+   if me[i].exist then inc(me[i].body,poradie);
+   until i = 5;
+   end;
+end;
+
+function whpwr(x,y:integer):byte;
+var i,j,min:byte;
+begin
+min:=50;j:=0;
+for i:=1 to 4 do
+    if pwr[i].exist then
+       if min > trunc(sqrt(sqr(pwr[i].x - x)+sqr(pwr[i].y - y)))
+       then begin
+            min:=trunc(sqrt(sqr(pwr[i].x - x)+sqr(pwr[i].y - y)));
+            j:=i
+            end;
+if min <> 50 then whpwr:=j
+             else whpwr:=0;
+end;
+
+procedure spravexpl(x,y:integer;a:byte);
+begin
+if a = 1 then
+   begin
+   explod.exist:=true;
+   explod.x:=x;
+   explod.y:=y;
+   explod.r:=0;
+   end;
+if (a = 0) and (explod.exist=true) then
+   if explod.r<121 then
+      begin
+      setlinestyle(0,0,2);
+      inc(explod.r,3);
+      setcolor(black);
+      circle(explod.x,explod.y,explod.r-1);
+      setcolor(13);
+      circle(explod.x,explod.y,explod.r);
+      setfillstyle(1,13);
+      floodfill(explod.x+explod.r-4,explod.y,13);
+      end
+   else begin
+        setcolor(13);
+        circle(explod.x,explod.y,explod.r);
+        setfillstyle(1,black);
+        floodfill(explod.x,explod.y,black);
+        setcolor(black);
+        circle(explod.x,explod.y,explod.r);
+        if (explod.x-explod.r<1) or (explod.x+explod.r>640)
+        or (explod.y-explod.r<1) or (explod.y+explod.r>480)
+        then hranica;
+        explod.exist:=false;
+        setlinestyle(0,0,0);
+        end;
+end;
+
+procedure mepohyb;
+var kamx,kamy:integer;
+    i,j:-1..1;
+    pom,pomvlast,u,l,pompwr:byte;
+    stri:string;
+begin
+me[1].zvysx:=me[1].zvysx-cos((me[1].uhol/180)*pi)*me[1].v+trunc(cos((me[1].uhol/180)*pi)*me[1].v);
+me[1].zvysy:=me[1].zvysy-sin((me[1].uhol/180)*pi)*me[1].v+trunc(sin((me[1].uhol/180)*pi)*me[1].v);
+kamx:=me[1].x-trunc(cos((me[1].uhol/180)*pi)*me[1].v);
+kamy:=me[1].y-trunc(sin((me[1].uhol/180)*pi)*me[1].v);
+
+if abs (me[1].zvysx) > 1 then
+                         if me[1].zvysx > 0 then begin
+                                                 me[1].zvysx:=me[1].zvysx-1;
+                                                 inc(kamx);
+                                                 end
+                                            else begin
+                                                 me[1].zvysx:=me[1].zvysx+1;
+                                                 dec(kamx);
+                                                 end;
+if abs (me[1].zvysy) > 1 then
+                         if me[1].zvysy > 0 then begin
+                                                 me[1].zvysy:=me[1].zvysy-1;
+                                                 inc(kamy);
+                                                 end
+                                            else begin
+                                                 me[1].zvysy:=me[1].zvysy+1;
+                                                 dec(kamy);
+                                                 end;
+pom:=0;pomvlast:=0;pompwr:=0;
+case me[1].level of
+1:begin u:=1; l:=7; end;
+2:begin u:=2; l:=20; end;
+3:begin u:=3; l:=42; end;
+end;
+if getpixel(kamx,kamy) <> 0 then for i:=-u to u do
+                                     for j:=-u to u do
+                                         begin
+                                         if (getpixel(kamx+i,kamy+j) <> me[1].farba)
+                                         and (getpixel(kamx+i,kamy+j) <> 0)
+                                         and (getpixel(kamx+i,kamy+j) <> 13)
+                                            then inc(pom);
+                                         if getpixel(kamx+i,kamy+j) = me[1].farba
+                                            then inc(pomvlast);
+                                         if getpixel(kamx+i,kamy+j) = 13
+                                            then inc(pompwr);
+                                         end;
+if (pom>2) or (pomvlast>l) then
+   begin
+   me[1].exist:=false;
+   oboduj(1,1);
+   end;
+
+if (pompwr>2) and (whpwr(kamx,kamy) <> 0) then
+   begin
+   case pwr[whpwr(kamx,kamy)].typ of
+   1:if me[1].level<3 then inc(me[1].level);
+   2:if me[1].level>1 then dec(me[1].level);
+   3:spravexpl(kamx,kamy,1);
+   end;
+   case me[1].level of
+   1:begin me[1].v:=2;   me[1].otac:=5; end;
+   2:begin me[1].v:=2.3; me[1].otac:=7; end;
+   3:begin me[1].v:=2.7; me[1].otac:=10; end;
+   end;
+   pwr[whpwr(kamx,kamy)].exist:=false;
+   end;
+
+for i:=-u to u do
+    for j:=-u to u do
+        putpixel(kamx+i,kamy+j,me[1].farba);
+me[1].x:=kamx;
+me[1].y:=kamy;
+end;
+
+procedure aipohyb;
+var kamx,kamy,lucx,lucy,uhol,l,lp,ll,u:integer;
+    i,j,bot:-4..4;
+    pom,luc,pomvlast:byte;
+    stri:string;
+    smernica,maxim:real;
+    max:array[1..2] of integer;
+    vl,vp,nas,traf:boolean;
+label 1;
+begin
+bot:=0;
+repeat
+inc(bot);
+if ai[bot].exist then
+begin
+ai[bot].boc:=0;
+vl:=false;vp:=false;
+ll:=0;lp:=0;
+traf:=false;
+for luc:=10 to 80 do
+            begin
+            lucx:=ai[bot].x-trunc(cos(((ai[bot].uhol-5)/180)*pi)*luc);
+            lucy:=ai[bot].y-trunc(sin(((ai[bot].uhol-5)/180)*pi)*luc);
+            if getpixel(lucx,lucy) <> 0 then
+                                        begin
+                                        traf:=true;
+                                        goto 1;
+                                        end;
+            end;
+for luc:=10 to 80 do
+            begin
+            lucx:=ai[bot].x-trunc(cos(((ai[bot].uhol+5)/180)*pi)*luc);
+            lucy:=ai[bot].y-trunc(sin(((ai[bot].uhol+5)/180)*pi)*luc);
+            if getpixel(lucx,lucy) <> 0 then
+                                        begin
+                                        traf:=true;
+                                        goto 1;
+                                        end;
+            end;
+case ai[bot].level of
+1:u:=3;
+2:u:=8;
+3:u:=9;
+end;
+for luc:=u  to 15 do
+            begin
+            lucx:=ai[bot].x-trunc(cos(((ai[bot].uhol+45)/180)*pi)*luc);
+            lucy:=ai[bot].y-trunc(sin(((ai[bot].uhol+45)/180)*pi)*luc);
+            if getpixel(lucx,lucy) <> 0 then
+                                        begin
+                                        traf:=true;
+                                        break;
+                                        end;
+            lucx:=ai[bot].x-trunc(cos(((ai[bot].uhol-45)/180)*pi)*luc);
+            lucy:=ai[bot].y-trunc(sin(((ai[bot].uhol-45)/180)*pi)*luc);
+            if getpixel(lucx,lucy) <> 0 then
+                                        begin
+                                        traf:=true;
+                                        break;
+                                        end;
+            end;
+
+1:
+           if traf then
+              begin
+              ai[bot].pamat:=0;
+              ll:=0;lp:=0;i:=-4;
+              repeat
+                  inc(i);
+                  case i of
+                     -3:u:=-45;
+                     -2:u:=-90;
+                     -1:u:=-60;
+                     0:u:=-15;
+                     1:u:=15;
+                     2:u:=60;
+                     3:u:=90;
+                     4:u:=45;
+                  end;
+                  nas:=false;
+                  case ai[bot].level of
+                  1:l:=2;
+                  2:l:=5;
+                  3:l:=9;
+                  end;
+                  repeat
+                        inc(l);
+                        max[1]:=ai[bot].x-trunc(cos(((ai[bot].uhol+u)/180)*pi)*l);
+                        max[2]:=ai[bot].y-trunc(sin(((ai[bot].uhol+u)/180)*pi)*l);
+                        if getpixel(max[1],max[2]) <> 0 then break;
+                  until l=50;
+
+                  if i < 1 then ll:=ll+l
+                           else lp:=lp+l;
+              until i=4;
+
+              if lp<250 then
+                 if lp<=ll then vl:=true
+                           else vp:=true;
+              if ll<250 then
+                 if ll<=lp then vp:=true
+                           else vl:=true;
+{             setfillstyle(1,black);
+              bar(1,1,100,50);
+              str(ll,stri);
+              auttext(stri,1,1);
+              str(lp,stri);
+              auttext(stri,30,1);
+              delay(300);}
+              end;
+if vl then
+      begin
+      ai[bot].boc:=1;
+      ai[bot].pamat:=3;
+      end;
+if vp then
+      begin
+      ai[bot].boc:=2;
+      ai[bot].pamat:=-3;
+      end;
+
+if (ai[bot].pamat = 0) and (ai[bot].level=1) then
+   begin
+   if ai[bot].x-me[1].x <> 0 then
+      begin
+      if ai[bot].x-me[1].x < 0 then
+         u:=trunc(arctan((ai[bot].y-me[1].y)/(ai[bot].x-me[1].x))*180/pi)
+                             else
+         u:=180 - trunc(arctan((ai[bot].y-me[1].y)/(ai[bot].x-me[1].x))*180/pi);
+      if (ai[bot].y < me[1].y)  and (me[1].x > ai[bot].x) then u:=360 - u;
+      end
+                           else
+      if ai[bot].y < me[1].y then u:=90
+                           else u:=270;
+      u:=540 - u;
+      u:=u mod 360;
+      if abs(u - ai[bot].uhol) < 180 then
+         if u - ai[bot].uhol < 0 then
+                               ai[bot].boc:=1
+                               else
+                               ai[bot].boc:=2
+                                   else
+         if u - ai[bot].uhol > 0 then
+                               ai[bot].boc:=2
+                               else
+                               ai[bot].boc:=1;
+
+
+{              setfillstyle(1,black);
+              bar(1,1,100,50);
+              str(u,stri);
+              auttext(stri,1,1);
+              setcolor(yellow);
+              line(ai[bot].x,ai[bot].y,me[1].x,me[1].y);
+              auttext(stri,30,1);
+              delay(10);}
+   end;
+
+
+{1 vyhyb vlavo
+ 2 vyhyb vpravo}
+
+if      ai[bot].boc = 1 then dec(ai[bot].uhol,ai[bot].otac)
+else if ai[bot].boc = 2 then inc(ai[bot].uhol,ai[bot].otac);
+
+if (ai[bot].pamat>0) and (ai[bot].boc = 0) then begin
+                                            dec(ai[bot].uhol,3);
+                                            dec(ai[bot].pamat);
+                                            end;
+if (ai[bot].pamat<0) and (ai[bot].boc = 0) then begin
+                                            inc(ai[bot].uhol,3);
+                                            inc(ai[bot].pamat);
+                                            end;
+ai[bot].zvysx:=ai[bot].zvysx-cos((ai[bot].uhol/180)*pi)*ai[bot].v+trunc(cos((ai[bot].uhol/180)*pi)*ai[bot].v);
+ai[bot].zvysy:=ai[bot].zvysy-sin((ai[bot].uhol/180)*pi)*ai[bot].v+trunc(sin((ai[bot].uhol/180)*pi)*ai[bot].v);
+kamx:=ai[bot].x-trunc(cos((ai[bot].uhol/180)*pi)*ai[bot].v);
+kamy:=ai[bot].y-trunc(sin((ai[bot].uhol/180)*pi)*ai[bot].v);
+
+if abs (ai[bot].zvysx) > 1 then
+                         if ai[bot].zvysx > 0 then begin
+                                                 ai[bot].zvysx:=ai[bot].zvysx-1;
+                                                 inc(kamx);
+                                                 end
+                                            else begin
+                                                 ai[bot].zvysx:=ai[bot].zvysx+1;
+                                                 dec(kamx);
+                                                 end;
+if abs (ai[bot].zvysy) > 1 then
+                         if ai[bot].zvysy > 0 then begin
+                                                 ai[bot].zvysy:=ai[bot].zvysy-1;
+                                                 inc(kamy);
+                                                 end
+                                            else begin
+                                                 ai[bot].zvysy:=ai[bot].zvysy+1;
+                                                 dec(kamy);
+                                                 end;
+pom:=0;pomvlast:=0;
+case ai[bot].level of
+1:begin u:=1; l:=8; end;
+2:begin u:=2; l:=19; end;
+3:begin u:=3; l:=38; end;
+end;
+if getpixel(kamx,kamy) <> 0 then for i:=-u to u do
+                                     for j:=-u to u do
+                                         begin
+                                         if (getpixel(kamx+i,kamy+j) <> ai[bot].farba)
+                                         and (getpixel(kamx+i,kamy+j) <> 0)
+                                            then inc(pom);
+                                         if getpixel(kamx+i,kamy+j) = ai[bot].farba
+                                            then inc(pomvlast);
+                                         end;
+if (pom>2) or (pomvlast>l+1) then
+   begin
+   ai[bot].exist:=false;
+   oboduj(2,bot);
+   end;
+
+for i:=-u to u do
+    for j:=-u to u do
+        putpixel(kamx+i,kamy+j,ai[bot].farba);
+ai[bot].x:=kamx;
+ai[bot].y:=kamy;
+end;
+until bot=4;
+end;
+
+procedure stvorbota(cislo,farba,level:byte);
+var a,b:integer;
+    i,j,ot:byte;
+    mena:array[1..6] of string;
+    jetake:boolean;
+    rychlost:real;
+begin
+randomize;
+if not ai[cislo].je then
+   begin
+   ai[cislo].je:=true;
+   ai[cislo].farba:=farba;
+   ai[cislo].meno:='';
+   mena[1]:='Geoffrey';mena[2]:='Jordan';mena[3]:='Robo';
+   mena[4]:='Frankey';mena[5]:='Istvan';mena[6]:='Trevor';
+   repeat
+     jetake:=false;
+     j:=random(6)+1;
+     for i:=1 to 5 do
+         if ai[i].meno = mena[j] then jetake:=true;
+   until not jetake;
+   ai[cislo].meno:=mena[j];
+   end;
+
+if not ai[cislo].exist then
+   begin
+   a:=random(360);
+   ai[cislo].x:=random(500) + 70 + cislo*10;
+   ai[cislo].y:=random(380) + 50 + cislo+10;
+   ai[cislo].level:=level;
+   ai[cislo].uhol:=a;
+   ai[cislo].pamat:=0;
+   end;
+ai[cislo].level:=level;
+ai[cislo].exist:=true;
+case level of
+1:begin rychlost:=2.2; ot:=7; end;
+2:begin rychlost:=3.5; ot:=15; end;
+3:begin rychlost:=4.9; ot:=22; end;
+end;
+ai[cislo].v:=rychlost;
+ai[cislo].otac:=ot;
+end;
+
+procedure stvorme(cislo,farba:byte;meno:string);
+var a,b:integer;
+    ot:byte;
+    rychlost:real;
+begin
+randomize;
+if not me[cislo].je then
+   begin
+   me[cislo].meno:=meno;
+   me[cislo].je:=true;
+   me[cislo].farba:=farba;
+   me[cislo].level:=1;
+   end;
+
+if not me[cislo].exist then
+   begin
+   a:=random(360);
+   me[cislo].x:=320+trunc(cos((a/180)*pi)*100);
+   me[cislo].y:=240+trunc(sin((a/180)*pi)*100);
+   me[cislo].exist:=true;
+   end;
+me[cislo].exist:=true;
+case me[cislo].level of
+1:begin rychlost:=2; ot:=5; end;
+2:begin rychlost:=2.3; ot:=7; end;
+3:begin rychlost:=2.7; ot:=10; end;
+end;
+me[cislo].v:=rychlost;
+me[cislo].otac:=ot;
+end;
+
+procedure obdlznik(a,b,c,d,e:integer);
+begin
+setcolor(e);
+line(a,b,c,b);
+line(a,d,c,d);
+line(a,b,a,d);
+line(c,b,c,d);
+end;
+
+procedure summary;
+type bodovanie = record
+     cerv,kto,body:byte;
+     end;
+var i,j,pom,p:byte;
+    chart:array[1..6] of bodovanie;
+    zorad:boolean;
+    stri:string;
+    fp:array[1..6,1..2] of byte;
+begin
+for i:=1 to 6 do
+    chart[i].body:=0;
+i:=0;j:=0;stri:='';
+repeat
+inc(i);
+if me[i].je then
+   if ai[i].je    then begin
+                       inc(j);
+                       chart[j].body:=me[i].body;
+                       chart[j].kto:=1;
+                       chart[j].cerv:=i;
+                       inc(j);
+                       chart[j].body:=ai[i].body;
+                       chart[j].kto:=2;
+                       chart[j].cerv:=i;
+                       end
+                  else begin
+                       inc(j);
+                       chart[j].body:=me[i].body;
+                       chart[j].kto:=1;
+                       chart[j].cerv:=i;
+                       end;
+if ai[i].je and not me[i].je then
+                    begin
+                    inc(j);
+                    chart[j].body:=ai[i].body;
+                    chart[j].kto:=2;
+                    chart[j].cerv:=i;
+                    end;
+until i=5;
+
+repeat
+for i:=1 to j-1 do
+    begin
+    zorad:=true;
+    if chart[i].body<chart[i+1].body then
+       begin
+       zorad:=false;
+       pom:=chart[i].body;
+       chart[i].body:=chart[i+1].body;
+       chart[i+1].body:=pom;
+       pom:=chart[i].kto;
+       chart[i].kto:=chart[i+1].kto;
+       chart[i+1].kto:=pom;
+       pom:=chart[i].cerv;
+       chart[i].cerv:=chart[i+1].cerv;
+       chart[i+1].cerv:=pom;
+       end;
+    end;
+until zorad;
+fp[1,1]:=chart[1].cerv;
+fp[1,2]:=chart[1].kto;
+p:=1;
+for i:=2 to 6 do
+    if chart[i].body = chart[1].body then
+       begin
+       inc(p);
+       fp[i,1]:=chart[i].cerv;
+       fp[i,2]:=chart[i].kto;
+       end
+    else fp[i,1]:=0;
+
+if chart[1].body <> 0 then
+   for i:=1 to p do
+       begin
+       if fp[i,2] = 1 then setfillstyle(7,me[fp[i,1]].farba)
+                      else setfillstyle(7,ai[fp[i,1]].farba);
+       bar(1,(480 div p)*(i-1),640,(480 div p)*i);
+       end
+else begin
+     setfillstyle(7,white);
+     bar(1,1,640,480);
+     end;
+
+for i:=1 to j do
+    begin
+    if chart[i].kto = 1 then pom:=me[chart[i].cerv].farba
+                        else pom:=ai[chart[i].cerv].farba;
+    setfillstyle(1,pom);
+    bar(50+((540*j - 540*(j-i+1)) div (2*j)),-60+i*80,590 - ((540*j - 540*(j-i+1)) div (2*j)),i*80);
+    if chart[i].kto = 1 then stri:=me[chart[i].cerv].meno
+                        else stri:=ai[chart[i].cerv].meno;
+    auttext(stri,320-8*(length(stri) div 2),-50+i*80,black);
+    str(chart[i].body,stri);
+    auttext(stri,316,-34+i*80,black);
+    if chart[i].kto = 1 then str(me[chart[i].cerv].level,stri)
+                        else str(ai[chart[i].cerv].level,stri);
+    auttext('level '+stri,297,-14+i*80,black);
+    end;
+
+wasdown[escscan]:=false;
+repeat
+delay(50);
+until wasdown[escscan];
+wasdown[escscan]:=false;
+end;
+
+function pwrfree:byte;
+var i:byte;
+begin
+i:=0;
+repeat
+inc(i);
+until (i=5) or not pwr[i].exist;
+if i = 5 then pwrfree := 0
+         else pwrfree := i;
+end;
+
+function pwrmiesto(x,y:integer):boolean;
+var i,j:byte;
+    miesto:boolean;
+begin
+miesto:=true;
+for j:=0 to 9 do
+    for i:=9-j to 9+j do
+        if getpixel(x+i,y+j) <> 0 then miesto := false;
+pwrmiesto:=miesto;
+end;
+
+procedure pwrvytvor;
+var a,i:byte;
+    x,y:integer;
+    stri:string;
+begin
+randomize;
+a:=3;
+if pwrfree <> 0 then
+   begin
+   i:=pwrfree;
+   str(a,stri);
+   pwr[i].exist:=true;
+   pwr[i].typ:=a;
+   pwr[i].obr:='pwr'+stri+'.pas';
+   pwr[i].zivot:=random(100)+100;
+   repeat
+   x:=random(500)+70;
+   y:=random(400)+40;
+   until pwrmiesto(x,y);
+   pwr[i].x:=x;
+   pwr[i].y:=y;
+   end
+end;
+
+procedure pwrkresli(a:byte);
+var i,j,f:byte;
+    stri:string;
+    t:text;
+begin
+if pwr[a].exist then
+   begin
+   str(a,stri);
+   assign(t,pwr[a].obr);
+   reset(t);
+   i:=0;
+   repeat
+      begin
+      for j:=0 to 9 do
+          begin
+          read(t,f);
+          if f <> 0 then putpixel(pwr[a].x+i,pwr[a].y+j,f);
+          end;
+      readln(t);
+   end;
+   inc(i);
+   until eof(t);
+   close(t);
+   end;
+end;
+
+begin
+detectgraph(i,j);
+initgraph(i,j,'c:\tp\bgi');
+initnewkeyint;
+pwrtimer:=0;
+delaj:=10;
+pocai:=3;
+pocme:=1;
+for i:=1 to 5 do
+    begin
+    ai[i].exist:=false;
+    me[i].exist:=false;
+    ai[i].je:=false;
+    me[i].je:=false;
+    if i <> 5 then pwr[i].exist:=false;
+    end;
+stvorme(1,4,'Tammas');
+stvorbota(1,1,1);
+stvorbota(2,2,1);
+{stvorbota(3,3,1);}
+
+repeat
+poradie:=-1;
+pwrtimer:=0;
+pwr[1].exist:=false;
+explod.exist:=false;
+cleardevice;
+summary;
+cleardevice;
+auttext('Pripravit sa',270,220,white);
+obdlznik(267,240,367,255,15);
+setcolor(red);
+for i:=1 to 98 do
+    begin
+    line(267+i,241,267+i,254);
+    delay(1);
+    end;
+delay(50);
+stvorme(1,4,'Tammas');
+stvorbota(1,1,1);
+stvorbota(2,2,1);
+{stvorbota(3,3,1);}
+cleardevice;
+hranica;
+repeat
+delay(delaj);
+{inc(pwrtimer);
+
+if pwrtimer = 20 then
+   begin
+   pwrvytvor;
+   pwrkresli(1);
+   end;}
+
+if me[1].exist then mepohyb;
+if me[2].exist then mepohyb;
+aipohyb;
+{if explod.exist then spravexpl(0,0,0);}
+
+if keydown[leftscan] then dec(me[1].uhol,me[1].otac);
+if keydown[rightscan] then inc(me[1].uhol,me[1].otac);
+
+until keydown[escscan] or wasdown[f10scan] or (ziju<2);
+oboduj(0,0);
+until (wasdown[f10scan]);
+setoldkeyint;
+closegraph;
+end.

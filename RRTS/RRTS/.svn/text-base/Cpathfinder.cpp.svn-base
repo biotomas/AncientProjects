@@ -1,0 +1,219 @@
+#include "Cpathfinder.h"
+
+// ============================================================================================================
+// ======================================= Cpathfinder ========================================================
+// ============================================================================================================
+
+void Cpathfinder::CreateRectangle(int sizex, int sizey)
+{
+	if (path_map != NULL)
+		delete [] path_map;
+
+	width = sizex;
+	height = sizey;
+
+	path_map = new bool[width*height];
+
+	used_list = new bool[width*height];
+
+	for (int i = 0; i < width*height; i++)
+		path_map[i] = true;
+}
+
+void Cpathfinder::set_position(int x, int y, bool passable)
+{
+	if (x >= width || y >= height || x < 0 || y < 0)
+		return;
+	path_map[x + y*width] = passable;
+}
+
+void Cpathfinder::add_to_open_list(Point2D position, Point2D goal, CAnode *parent, int base_cost)
+{
+	int x = position.x,
+		y = position.y;
+	if (used_list[x+y*width] || x<0 || y<0 || x>=width || y>=height)
+		return;
+	used_list[x+y*width] = true;
+
+	CAnode node;
+	node.base_cost = base_cost;
+	node.distart_cost = parent->distart_cost + base_cost;
+	node.distgoal_cost = abs (x - goal.x) + abs (y - goal.y);
+	node.parent = parent;
+	node.position = position;
+	node.total_cost = base_cost + node.distart_cost + node.distgoal_cost;
+
+	open_list.insert(node);
+		//if false returned -> error
+}
+
+Cpath* Cpathfinder::find_path(Point2D from, Point2D to)
+{
+	for (int i=0; i<width*height; i++)
+		used_list[i] = false;
+
+	CAnode node;
+	CAnode* parent;
+	int cl_pos = 0; //closed list position;
+	open_list.clear();
+
+	int x = from.x;
+	int y = from.y;
+	int gx = to.x;
+	int gy = to.y;
+	
+	// prvy uzol, pociatocny bod.
+	used_list[x+y*width] = true;
+	node.parent = NULL;
+	node.base_cost = 1;
+	node.distart_cost = 0;
+	node.distgoal_cost = abs(x - gx) + abs(y - gy);
+	node.total_cost = node.distgoal_cost + 1;
+
+	closed_list[cl_pos] = node;
+	parent = &closed_list[cl_pos];
+	cl_pos++;
+
+	while( x != gx || y != gy )
+	{
+		//pridame susedov do open_list
+		if (path_map[x+1+(y+1)*width]== true)
+			add_to_open_list(Point2D(x+1, y+1), to, parent, 1);
+		if (path_map[x+1+(y)*width]== true)
+			add_to_open_list(Point2D(x+1, y), to, parent, 1);
+		if (path_map[x+1+(y-1)*width]== true)
+			add_to_open_list(Point2D(x+1, y-1), to, parent, 1);
+
+		if (path_map[x-1+(y+1)*width]== true)
+			add_to_open_list(Point2D(x-1, y+1), to, parent, 1);
+		if (path_map[x-1+(y)*width]== true)
+			add_to_open_list(Point2D(x-1, y), to, parent, 1);
+		if (path_map[x-1+(y-1)*width]== true)
+			add_to_open_list(Point2D(x-1, y-1), to, parent, 1);
+
+		if (path_map[x+(y-1)*width]== true)
+			add_to_open_list(Point2D(x, y-1), to, parent, 1);
+		if (path_map[x+(y+1)*width]== true)
+			add_to_open_list(Point2D(x, y+1), to, parent, 1);
+
+		// vyber najlepsi node
+		if (open_list.num_elements() == 0) //nenasla sa cesta
+			return NULL;
+
+		node = open_list.get_min();
+		x = node.position.x;
+		y = node.position.y;
+		closed_list[cl_pos] = node;
+		parent = &closed_list[cl_pos];
+		cl_pos++;
+		if (cl_pos >= list_size) // error
+			return NULL;
+	}
+	// dostali sme sa do ciela, konstruujeme cestu spat.
+	Point2D tmp[max_path_length];
+	cl_pos--;
+	CAnode* pnode = &closed_list[cl_pos];
+	int pos = 0;
+	while(pnode->parent != NULL)
+	{
+		tmp[pos] = pnode->position;
+		pos++;
+		pnode = pnode->parent;
+	}
+	
+	Cpath* result = new Cpath;
+	result->length = pos;
+	result->path = new Point2D[pos];
+	memcpy(result->path, tmp, sizeof(Point2D)*pos);
+
+	return result;
+}
+
+Cpathfinder::Cpathfinder(void)
+{
+	path_map = NULL;
+}
+
+Cpathfinder::~Cpathfinder(void)
+{
+	if (path_map != NULL)
+		delete [] path_map;
+}
+
+// ============================================================================================================
+// ======================================= Cheap ==============================================================
+// ============================================================================================================
+
+Cheap::Cheap(int size)
+{
+	this->size = size;
+	heap = new CAnode[size];
+	elements = 0;
+}
+
+Cheap::~Cheap()
+{
+	delete [] heap;
+}
+
+void Cheap::clear()
+{
+	elements = 0;
+}
+
+int Cheap::num_elements()
+{
+	return elements;
+}
+
+bool Cheap::insert(CAnode element)
+{
+	if (elements >= size)
+		return false;
+	heap[elements] = element;
+	CAnode tmp;
+	size_t j,i = elements;
+	while (i>0)
+	{
+		j = i >> 1;
+		if (heap[j].total_cost > heap[i].total_cost)
+		{
+			tmp = heap[i];
+			heap[i] = heap[j];
+			heap[j] = tmp;
+			i = j;
+		}
+		else break;
+	}
+	elements++;
+	return true;
+}
+
+CAnode Cheap::get_min()
+{
+	elements--;
+	CAnode tmp, ret = heap[0];
+	heap[0] = heap[elements];
+	int c,a,b,i = 0;
+	while ( (b = (2*i+2)) <= elements)
+	{
+		a = b - 1;
+		if (heap[a].total_cost > heap[b].total_cost)
+		{
+			c = a;
+			a = b;
+			b = c;
+		}
+		// a je mensi syn, b je vacsi syn
+		if (heap[a].total_cost < heap[i].total_cost)
+		{
+			tmp = heap[a];
+			heap[a] = heap[i];
+			heap[i] = tmp;
+			i = a;
+		}
+		else break;
+	}
+	return ret;
+}
+/**/

@@ -1,0 +1,175 @@
+#include <windows.h>
+#include "directxgraphics.h"
+#include "camera.h"
+#include "skybox.h"
+#include "userinput.h"
+#include "gamemap.h"
+#include "selector.h"
+#include "UnitManager.h"
+#include "Csound.h"
+#include "Shot.h"
+#include "DownPanel.h"
+
+DirectXGraphics* g;
+Camera* cam;
+Selector selector;
+UnitManager* um;
+
+void HandleKeys(WPARAM wParam)
+{
+    switch(wParam)
+    {
+	case VK_DOWN:
+		cam->MoveCamera(D3DXVECTOR3(0.0f, 0.0f, -0.1f));
+		break;
+	case VK_UP:
+		cam->MoveCamera(D3DXVECTOR3(0.0f, 0.0f, 0.1f));
+		break;
+	case VK_LEFT:
+		cam->MoveCamera(D3DXVECTOR3(-0.1f, 0.0f, 0.0f));
+		break;
+	case VK_RIGHT:
+		cam->MoveCamera(D3DXVECTOR3(0.1f, 0.0f, 0.0f));
+		break;
+	case VK_F1:
+		cam->MoveCamera(D3DXVECTOR3(0.0f, 0.1f, 0.0f));
+		break;
+	case VK_F2:
+		cam->MoveCamera(D3DXVECTOR3(0.0f, -0.1f, 0.0f));
+		break;
+	}
+}
+
+LRESULT WINAPI MsgProc( HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam )
+{
+	int mx,my;
+	mx = lParam & 0x0000FFFF;
+	my = (lParam & 0xFFFF0000) >>16;
+    switch( msg )
+    {
+	case WM_SETCURSOR:
+		SetCursor(LoadCursor(NULL, IDC_ARROW));
+		break;
+	case WM_KEYDOWN:
+		HandleKeys(wParam);
+		break;
+
+	case WM_MOUSEMOVE:
+		selector.MouseMove(mx, my);
+		break;
+	case WM_LBUTTONDOWN:
+		selector.LeftMouseDown(mx, my);
+		break;
+	case WM_LBUTTONUP:
+		selector.LeftMouseUp(mx, my);
+		if(DownPanel::GetDefaultInstance()->PanelItemClicked(mx, my) >= 0)
+			break;
+		um->NewSelection();
+		break;
+	case WM_RBUTTONDOWN:
+		selector.RightMouse(mx, my);
+		um->ProcessOrder();
+		break;
+
+    case WM_DESTROY:
+        PostQuitMessage( 0 );
+        return 0;
+    }
+    return DefWindowProc( hWnd, msg, wParam, lParam );
+}
+
+
+INT WINAPI WinMain( HINSTANCE, HINSTANCE, LPSTR, INT)
+{
+    // Register the window class
+    WNDCLASSEX wc = { sizeof(WNDCLASSEX), CS_CLASSDC, MsgProc, 0L, 0L,
+                      GetModuleHandle(NULL), NULL, NULL, NULL, NULL,
+                      "RRTS", NULL };
+	//wc.hCursor = IDC_HAND;
+    RegisterClassEx( &wc );
+
+    // Create the application's window
+    HWND hWnd = CreateWindow( "RRTS", "RRTS",
+							WS_POPUP, 0, 0, 
+							800, 600,
+                              NULL, NULL, wc.hInstance, NULL );
+
+    ShowWindow( hWnd, SW_SHOWDEFAULT );
+    UpdateWindow( hWnd );
+
+	////////HCURSOR cursor;
+	////////cursor = LoadCursor(NULL, IDC_HAND);
+	////////SetCursor(cursor);
+
+	DisplayParameters dsp;
+	dsp.fullscreen = false;
+	dsp.resolution_x = 800;
+	dsp.resolution_y = 600;
+	dsp.sctype = ST_SINGLE;
+
+	g = DirectXGraphics::getInstance();
+	if(FAILED(g->InitGraphics(hWnd, dsp)))
+		exit(0);
+
+	g->SetSkybox(new Skybox("skycube.x", g->getDevice()));
+
+	cam = new Camera;
+	cam->SetCameraExplicit(D3DXVECTOR3(0,2,-2), D3DXVECTOR3(0, 0, 0));
+	g->SetCamera(0, cam);
+	//g->SetCamera(1, &cam);
+
+
+	// sound
+	Csound::Instance()->InitializeSoundSystem(hWnd);
+	// gamemap
+	GameMap gm;
+	gm.LoadMapFromFile("map1.txt", g->getDevice());
+	g->AddRenderable(&gm);
+	g->AddRenderable(&selector);
+
+	g->AddRenderable(ShotManager::GetDefaultInstance());
+
+	// downpanel test
+	DownPanel::GetDefaultInstance()->Initialize(g);
+	DownPanel::GetDefaultInstance()->SetPositionSize(0, 500, 800, 100);
+
+	g->AddSprite(DownPanel::GetDefaultInstance());
+
+	um = new UnitManager();
+	um->SetSelector(&selector);
+	g->AddRenderable(um->GetUnitMap());
+
+    // Enter the message loop
+    MSG msg;
+    ZeroMemory( &msg, sizeof(msg) );
+	while( msg.message!=WM_QUIT )
+    {
+        if( PeekMessage( &msg, NULL, 0U, 0U, PM_REMOVE ) )
+        {
+            TranslateMessage( &msg );
+            DispatchMessage( &msg );
+        }
+        else
+		{
+			g->Render();
+			// game logic
+			um->GameCycle();
+		}
+    }
+
+    UnregisterClass( "RRTS", wc.hInstance );
+    return 0;
+}
+
+/*
+linker->input->Additional dependencies:
+d3dxof.lib
+dxguid.lib
+d3dx9d.lib
+d3d9.lib
+winmm.lib
+dxerr.lib
+dinput8.lib
+comctl32.lib
+dsound.lib
+/**/

@@ -1,0 +1,9 @@
+var x1,x2,y1,y2,u1,u2:real;
+
+begin
+read(x1,x2,y1,y2);
+u1:=(x2-x1)*(y2-y1);
+read(x1,x2,y1,y2);
+u2:=(x2-x1)*(y2-y1);
+if abs(u1-u2) < 0.0001 then write('true') else write('false');
+end.

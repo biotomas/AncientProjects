@@ -1,0 +1,104 @@
+#include "DownPanel.h"
+
+DownPanel* DownPanel::default_instance = NULL;
+
+DownPanel* DownPanel::GetDefaultInstance()
+{
+	if(default_instance == NULL)
+		default_instance = new DownPanel();
+	return default_instance;
+}
+
+void DownPanel::Initialize(DirectXGraphics* g)
+{
+	this->background_texture = g->LoadTexture("panel.png", 800, 100);
+}
+
+void DownPanel::SetPositionSize(int left, int top, int width, int height)
+{
+	this->left = left;
+	this->top = top;
+	this->width = width;
+	this->height = height;
+}
+
+void DownPanel::AddUnitInfo(std::string name, const int *hitpoints, int attack, float speed)
+{
+	UnitInfo ui;
+	ui.name = name;
+	ui.hitpoints = hitpoints;
+	ui.attack = attack;
+	ui.speed = speed;
+	this->unit_infos.push_back(ui);
+}
+
+void DownPanel::ClearUnitInfos()
+{
+	this->unit_infos.clear();
+}
+
+void DownPanel::Write(std::string msg, int x, int y)
+{
+	this->writer.set_position(x+this->left, y+this->top);
+	this->writer.set_text(msg);
+	this->writer.render();	
+}
+void DownPanel::Write(int msg, int x, int y)
+{
+	this->writer.set_position(x+this->left, y+this->top);
+	this->writer.set_text(msg);
+	this->writer.render();	
+}
+void DownPanel::Write(float msg, int x, int y)
+{
+
+	this->writer.set_position(x+this->left, y+this->top);
+	this->writer.set_text(int(msg));
+	this->writer.render();	
+}
+
+void DownPanel::render(LPD3DXSPRITE spritedevice)
+{
+	spritedevice->Draw(this->background_texture, 0, 0, &D3DXVECTOR3((float)this->left, (float)this->top, 0), D3DCOLOR_RGBA(255,255,255,128));
+	
+	//draw the other thingz
+	UnitInfoList::iterator it;
+	UnitInfo ui;
+	int i = 0;
+
+	for(it = this->unit_infos.begin(); it != this->unit_infos.end(); ++it)
+	{
+		ui = *it;
+		Write(ui.name, i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET, 10);
+		Write("HP:", i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET, 30);
+		Write(*ui.hitpoints, i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET + 50, 30);
+		Write("Att:", i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET, 50);
+		Write(ui.attack, i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET + 50, 50);
+		Write("Spd:", i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET, 70);
+		Write(1000*ui.speed, i * ITEM_LEFT_MULTIPLIER + ITEM_LEFT_OFFSET + 50, 70);
+		i++;
+	}
+}
+
+int DownPanel::PanelItemClicked(int x, int y)
+{
+	if(y < this->top || y > this->top + this->width)
+		//click away from this panel
+		return -1;
+	else
+		return (x - ITEM_LEFT_OFFSET)/ITEM_LEFT_MULTIPLIER;
+}
+
+DownPanel::DownPanel(void)
+{
+	this->background_texture = 0;
+	this->writer.set_color(0xffffffff);
+	this->writer.set_font(22, 10, "Terminal");
+}
+
+
+DownPanel::~DownPanel(void)
+{
+	if(this->background_texture != 0)
+		this->background_texture->Release();
+}

@@ -1,0 +1,295 @@
+#include "UserInput.h"
+#include <assert.h>
+
+GUID gamepad_guid;
+bool gamepad_found;
+
+BOOL CALLBACK gamepad_callback(const DIDEVICEINSTANCE* pdidInstance, VOID*)
+{
+	gamepad_guid = pdidInstance->guidInstance;
+	gamepad_found = true;
+	return DIENUM_STOP;
+}
+
+UserInput::UserInput(HINSTANCE hInst, HWND hWnd)
+{
+	keyboard_device = NULL;
+	mouse_device = NULL;
+	gamepad_device = NULL;
+
+	memset(&actions_map, 0, sizeof(actions_map));
+	memset(&mouse_state, 0, sizeof(DIMOUSESTATE));
+	memset(&gamepad_state, 0, sizeof(DIJOYSTATE));
+
+	HRESULT hr;
+	hr = DirectInput8Create(hInst, DIRECTINPUT_VERSION, IID_IDirectInput8, 
+							(void**)&dir_inp, NULL);
+	if (FAILED(hr))
+	{
+		MessageBox(NULL, "direct input creation failed", "BNL2", MB_OK);
+		return;
+	}
+
+	// init keyboard
+	hr = dir_inp->CreateDevice(GUID_SysKeyboard, &keyboard_device, NULL);
+	if (FAILED(hr))
+		MessageBox(NULL, "keyboard creation failed", "BNL2", MB_OK);
+	else
+	{
+		hr = keyboard_device->SetDataFormat(&c_dfDIKeyboard);
+		hr = keyboard_device->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+	}
+
+	// init mouse
+	hr = dir_inp->CreateDevice(GUID_SysMouse, &mouse_device, NULL);
+	if (FAILED(hr))
+		MessageBox(NULL, "mouse creation failed", "BNL2", MB_OK);
+	else
+	{
+		hr = mouse_device->SetDataFormat(&c_dfDIMouse);
+		hr = mouse_device->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+	}
+	
+	// init joystick if avaliable
+	// find an attached gamepad
+	gamepad_found = false;
+	dir_inp->EnumDevices(DI8DEVCLASS_GAMECTRL, gamepad_callback, NULL, DIEDFL_ATTACHEDONLY);
+
+	// if found then initialize it
+	if (gamepad_found)
+	{
+		hr = dir_inp->CreateDevice(gamepad_guid, &gamepad_device, NULL);
+		if ( SUCCEEDED(hr) )
+		{
+			hr = gamepad_device->SetDataFormat(&c_dfDIJoystick);
+			hr = gamepad_device->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE);
+			//MessageBox(NULL, "Gamepad detected and initialized", "BNL2", MB_OK);
+		}
+	}
+}
+
+bool UserInput::AcquireDevice(InputDevice dev)
+{
+	if (dev == id_all)
+	{
+		bool a,b,c;
+		a = AcquireDevice(id_keyboard);
+		b = AcquireDevice(id_mouse);
+		c = AcquireDevice(id_gamepad);
+		return a && b && c;
+	}
+
+	HRESULT hr=0;
+
+	switch(dev)
+	{
+	case id_keyboard: if(keyboard_device)
+						  hr = keyboard_device->Acquire();
+					  break;
+	case id_mouse: if (mouse_device)
+					   hr = mouse_device->Acquire();
+				   break;
+	case id_gamepad: if (gamepad_device)
+						 hr = gamepad_device->Acquire();
+					 break;
+	}
+	if (FAILED(hr))
+		return false;
+	else
+		return true;
+}
+
+void UserInput::UnacquireDevice(InputDevice dev)
+{
+	if (dev == id_all)
+	{
+		UnacquireDevice(id_keyboard);
+		UnacquireDevice(id_mouse);
+		UnacquireDevice(id_gamepad);
+		return;
+	}
+	switch(dev)
+	{
+	case id_keyboard: 
+		if (keyboard_device) keyboard_device->Unacquire();
+		break;
+	case id_mouse:
+		if (mouse_device) mouse_device->Unacquire();
+		break;
+	case id_gamepad:
+		if (gamepad_device) gamepad_device->Unacquire();
+		break;
+	}
+}
+
+void UserInput::AddInputAction(UserInput::ICODE code, InputAction *action)
+{
+	actions_map[code] = action;
+}
+
+void UserInput::ClearInputAction(UserInput::ICODE code)
+{
+	actions_map[code] = NULL;
+}
+
+void UserInput::ProcessMouse()
+{
+	HRESULT hr;
+	DIMOUSESTATE ms;
+	hr = mouse_device->Poll();
+	if (hr == DIERR_NOTACQUIRED || hr == DIERR_INPUTLOST)
+	{
+		if (AcquireDevice(id_mouse))
+			mouse_device->Poll();
+		else
+			return;
+	}
+	hr = mouse_device->GetDeviceState(sizeof(DIMOUSESTATE), &ms);
+	if (FAILED(hr) || (0 == memcmp(&ms, &mouse_state, sizeof(DIMOUSESTATE))))
+		return;
+	// the mouse state has changed since the last check
+
+	// mouse moved
+	if (ms.lX != mouse_state.lX || ms.lY != mouse_state.lY)
+	{
+		if (actions_map[ICODE_mouse_move])
+			actions_map[ICODE_mouse_move]->Perform_action(ms.lX, ms.lY);
+	}
+
+	// mouse wheel up, down
+	if (ms.lZ != mouse_state.lZ)
+	{
+		if (ms.lZ > mouse_state.lZ)
+		{
+			if (actions_map[ICODE_mouse_wheel_down])
+				actions_map[ICODE_mouse_wheel_down]->Perform_action(ms.lX, ms.lY);
+		}
+		else
+		{
+			if (actions_map[ICODE_mouse_wheel_up])
+				actions_map[ICODE_mouse_wheel_up]->Perform_action(ms.lX, ms.lY);
+		}
+	}
+
+	if ((ms.rgbButtons[0] & 0x80) && (actions_map[ICODE_mouse_left]))
+				actions_map[ICODE_mouse_left]->Perform_action(ms.lX, ms.lY);
+	if ((ms.rgbButtons[1] & 0x80) && (actions_map[ICODE_mouse_right]))
+				actions_map[ICODE_mouse_right]->Perform_action(ms.lX, ms.lY);
+	if ((ms.rgbButtons[2] & 0x80) && (actions_map[ICODE_mouse_middle]))
+				actions_map[ICODE_mouse_middle]->Perform_action(ms.lX, ms.lY);
+
+	memcpy(&mouse_state, &ms, sizeof(DIMOUSESTATE));
+}
+
+void UserInput::ProcessKeyboard()
+{
+	HRESULT hr;
+	char kb[256];
+	hr = keyboard_device->Poll();
+	if (hr == DIERR_NOTACQUIRED || hr == DIERR_INPUTLOST)
+	{
+		if (AcquireDevice(id_keyboard))
+			keyboard_device->Poll();
+		else
+			return;
+	}
+	hr = keyboard_device->GetDeviceState(sizeof(kb), &kb);
+	if (FAILED(hr))
+		return;
+
+	for(size_t i = 0; i < LAST_KEYCODE; ++i)
+		if (actions_map[i])
+			if (kb[i] & 0x80)
+				actions_map[i]->Perform_action(0,0);
+}
+
+void UserInput::ProcessGamepad()
+{
+	if (gamepad_device ==  NULL)
+		return;
+
+	HRESULT hr;
+	DIJOYSTATE gp;
+	hr = gamepad_device->Poll();
+	if (hr == DIERR_NOTACQUIRED || hr == DIERR_INPUTLOST)
+	{
+		if (AcquireDevice(id_gamepad))
+			hr = gamepad_device->Poll();
+		else
+			return;
+	}
+	hr = gamepad_device->GetDeviceState(sizeof(DIJOYSTATE), &gp);
+	if (FAILED(hr) || (0 == memcmp(&gp, &gamepad_state, sizeof(DIJOYSTATE))))
+		return;
+
+	const long midstate = 0x7fff; //half of 0xffff
+
+	if (gp.lX != midstate || midstate != gamepad_state.lY)
+	{
+		if(actions_map[ICODE_gamepad_direction_axis])
+			actions_map[ICODE_gamepad_direction_axis]->Perform_action(gp.lX, gp.lY);
+
+		if(gp.lX > midstate && actions_map[ICODE_gamepad_right])
+			actions_map[ICODE_gamepad_right]->Perform_action(gp.lX, gp.lY);
+		if(gp.lX < midstate && actions_map[ICODE_gamepad_left])
+			actions_map[ICODE_gamepad_left]->Perform_action(gp.lX, gp.lY);
+		if(gp.lY > midstate && actions_map[ICODE_gamepad_down])
+			actions_map[ICODE_gamepad_down]->Perform_action(gp.lX, gp.lY);
+		if(gp.lY < midstate && actions_map[ICODE_gamepad_up])
+			actions_map[ICODE_gamepad_up]->Perform_action(gp.lX, gp.lY);
+	}
+
+	if( (gp.rgbButtons[0] & 0x80) && (actions_map[ICODE_gamepad_button0]) )
+		actions_map[ICODE_gamepad_button0]->Perform_action(0,0);
+	if( (gp.rgbButtons[1] & 0x80) && (actions_map[ICODE_gamepad_button1]) )
+		actions_map[ICODE_gamepad_button1]->Perform_action(0,0);
+	if( (gp.rgbButtons[2] & 0x80) && (actions_map[ICODE_gamepad_button2]) )
+		actions_map[ICODE_gamepad_button2]->Perform_action(0,0);
+	if( (gp.rgbButtons[3] & 0x80) && (actions_map[ICODE_gamepad_button3]) )
+		actions_map[ICODE_gamepad_button3]->Perform_action(0,0);
+	if( (gp.rgbButtons[4] & 0x80) && (actions_map[ICODE_gamepad_button4]) )
+		actions_map[ICODE_gamepad_button4]->Perform_action(0,0);
+	if( (gp.rgbButtons[5] & 0x80) && (actions_map[ICODE_gamepad_button5]) )
+		actions_map[ICODE_gamepad_button5]->Perform_action(0,0);
+	if( (gp.rgbButtons[6] & 0x80) && (actions_map[ICODE_gamepad_button6]) )
+		actions_map[ICODE_gamepad_button6]->Perform_action(0,0);
+	if( (gp.rgbButtons[7] & 0x80) && (actions_map[ICODE_gamepad_button7]) )
+		actions_map[ICODE_gamepad_button7]->Perform_action(0,0);
+}
+
+void UserInput::CollectInput(InputDevice dev)	
+{
+	switch(dev)
+	{
+	case id_all:
+		ProcessMouse();
+		ProcessKeyboard();
+		ProcessGamepad();
+		break;
+	case id_mouse:
+		ProcessMouse();
+		break;
+	case id_keyboard:
+		ProcessKeyboard();
+		break;
+	case id_gamepad:
+		ProcessGamepad();
+		break;
+	}
+	// mouse
+	DIMOUSESTATE mouse_state;
+	mouse_device->GetDeviceState(sizeof(DIMOUSESTATE), &mouse_state);
+}
+
+UserInput::~UserInput(void)
+{
+	UnacquireDevice(id_all);
+	if (keyboard_device)
+		keyboard_device->Release();
+	if (mouse_device)
+		mouse_device->Release();
+	if (gamepad_device)
+		gamepad_device->Release();
+	if (dir_inp)
+		dir_inp->Release();
+}

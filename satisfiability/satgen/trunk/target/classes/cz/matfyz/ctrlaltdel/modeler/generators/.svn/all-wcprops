@@ -1,0 +1,59 @@
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators
+END
+FixedPointsGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 109
+/svn/satgen/!svn/ver/21/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/FixedPointsGenerator.java
+END
+PointsGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 104
+/svn/satgen/!svn/ver/21/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/PointsGenerator.java
+END
+ClausesGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 105
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/ClausesGenerator.java
+END
+TupleLiteralHelper.java
+K 25
+svn:wc:ra_dav:version-url
+V 107
+/svn/satgen/!svn/ver/21/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/TupleLiteralHelper.java
+END
+VariablePointsGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 112
+/svn/satgen/!svn/ver/21/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/VariablePointsGenerator.java
+END
+GenerationException.java
+K 25
+svn:wc:ra_dav:version-url
+V 108
+/svn/satgen/!svn/ver/21/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/GenerationException.java
+END
+MutuallyExclusiveClausesGenerator.java
+K 25
+svn:wc:ra_dav:version-url
+V 122
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/MutuallyExclusiveClausesGenerator.java
+END
+RangeSettingsException.java
+K 25
+svn:wc:ra_dav:version-url
+V 111
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/RangeSettingsException.java
+END
+RangeSettings.java
+K 25
+svn:wc:ra_dav:version-url
+V 102
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/generators/RangeSettings.java
+END

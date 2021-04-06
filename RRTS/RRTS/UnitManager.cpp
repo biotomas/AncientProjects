@@ -1,0 +1,207 @@
+#include "UnitManager.h"
+
+void UnitManager::SetSelector(Selector* selector)
+{
+	this->selector = selector;
+}
+
+UnitManager::UnitManager(void)
+{
+	this->unit_map = new UnitMap(15, 15, UNIT_TILESIZE);
+	pf = new Cpathfinder();
+	pf->CreateRectangle(15, 15);
+	pf->set_position(7, 0, false);
+	pf->set_position(7, 1, false);
+	pf->set_position(7, 2, false);
+	pf->set_position(7, 4, false);
+	pf->set_position(7, 5, false);
+	pf->set_position(7, 6, false);
+	pf->set_position(7, 7, false);
+
+	LPDIRECT3DDEVICE9 device = DirectXGraphics::getInstance()->getDevice();
+	Csound* pl = Csound::Instance(); //player
+
+	//resources
+	rts::Mesh* tank = new rts::Mesh("tank.x", device);
+	rts::Mesh* worker = new rts::Mesh("factory.x", device);
+	rts::Mesh* man = new rts::Mesh("man.x", device);
+	rts::Mesh* attman = new rts::Mesh("manattack.x", device);
+	SoundPtr man_attack = pl->LoadSound(L"sounds/man_attack.wav");
+	SoundPtr man_selected = pl->LoadSound(L"sounds/man_select.wav");
+	SoundPtr man_move = pl->LoadSound(L"sounds/man_move.wav");
+	SoundPtr tank_attack = pl->LoadSound(L"sounds/tank_attack.wav");
+	SoundPtr tank_selected = pl->LoadSound(L"sounds/tank_select.wav");
+	SoundPtr tank_move = pl->LoadSound(L"sounds/tank_move.wav");
+	SoundPtr yes = pl->LoadSound(L"sounds/yes.wav");
+
+	UnitType* utank = new UnitType();
+	UnitType* uman = new UnitType();
+	UnitType* uworker = new UnitType();
+
+	utank->name = "Tank";
+	utank->attack = 10;
+	utank->attack_mesh = NULL;
+	utank->attack_type = UAT_RANGED;
+	utank->initial_hitpoints = 1500;
+	utank->mesh = tank;
+	utank->range = 10;
+	utank->snd_attack = tank_attack;
+	utank->snd_move = tank_move;
+	utank->snd_seleceted = tank_selected;
+	utank->speed = 0.001f;
+	
+	uworker->name = "Worker";
+	uworker->attack = 0;
+	uworker->attack_mesh = NULL;
+	uworker->attack_type = UAT_BUILDER;
+	uworker->initial_hitpoints = 250;
+	uworker->mesh = worker;
+	uworker->range = 0;
+	uworker->snd_attack = yes;
+	uworker->snd_move = yes;
+	uworker->snd_seleceted = yes;
+	uworker->speed = 0.005f;
+	
+	uman->name = "Man";
+	uman->attack = 5;
+	uman->attack_mesh = attman;
+	uman->attack_type = UAT_MELEE;
+	uman->initial_hitpoints = 650;
+	uman->mesh = man;
+	uman->range = 1;
+	uman->snd_attack = man_attack;
+	uman->snd_move = man_move;
+	uman->snd_seleceted = man_selected;
+	uman->speed = 0.002f;
+
+	Unit* atacker1 = new Unit(uman, 1, 1);
+	Unit* atacker2 = new Unit(uman, 2, 2);
+	Unit* atacker3 = new Unit(uman, 3, 3);
+	Unit* tank1 = new Unit(utank, 5, 5);
+	Unit* tank2 = new Unit(utank, 5, 6);
+	Unit* worker1 = new Unit(uworker, 9, 9);
+
+
+	this->unit_map->AddUnit(1, 1, atacker1);
+	this->unit_map->AddUnit(2, 2, atacker2);
+	this->unit_map->AddUnit(3, 3, atacker3);
+	this->unit_map->AddUnit(5, 5, tank1);
+	this->unit_map->AddUnit(5, 6, tank2);
+	this->unit_map->AddUnit(9, 9, worker1);
+
+}
+
+void UnitManager::ProcessOrder()
+{
+	Unit* u;
+	UnitListIterator it;
+	MovingUnit mu;
+	Cpath* path;
+	int x, y;
+
+	selector->GetOrderLocation(this->unit_map, x, y);
+
+	if(this->unit_map->IsFree(x,y)) //if there is no unit then move
+	{
+		for(it = this->selected_units.begin(); it != this->selected_units.end(); ++it)
+		{
+			u = *it;
+			u->StartMoving();
+			path = pf->find_path(Point2D(u->GetPosX(), u->GetPosY()), Point2D(x, y));
+			if(path != NULL)
+			{
+				mu.path = path;
+				mu.unit = u;
+				mu.waiting_since = 0;
+				//if this unit already has a movement, delete it
+				MovingUnitList::iterator muit;
+				for(muit = this->moving_units.begin(); muit != this->moving_units.end(); ++muit)
+				{
+					if((*muit).unit == u)
+					{
+						this->moving_units.erase(muit);
+						break; //there will be at most such moving unit
+					}
+				}
+				this->moving_units.push_back(mu);
+			}		
+		}
+	}
+	else //attack
+	{
+		for(it = this->selected_units.begin(); it != this->selected_units.end(); ++it)
+		{
+			u = *it;
+			u->Attack(x, y);
+		}
+	}
+}
+
+void UnitManager::NewSelection()
+{
+	this->selected_units = this->selector->GetSelectedUnits(this->unit_map);
+	UnitListIterator it;
+	DownPanel::GetDefaultInstance()->ClearUnitInfos();
+	for(it = this->selected_units.begin(); it != this->selected_units.end(); ++it)
+	{
+		(*it)->Selected();
+		DownPanel::GetDefaultInstance()->AddUnitInfo((*it)->GetType()->name, (*it)->GetHPPointer(), (*it)->GetType()->attack, (*it)->GetType()->speed);
+	}
+}
+
+void UnitManager::GameCycle()
+{
+	MovingUnit mu;
+	Point2D pt;
+	MovingUnitList::iterator it;
+
+	for(it = this->moving_units.begin(); it != this->moving_units.end(); ++it)
+	{
+		mu = *it;
+		if(mu.unit->Moving()) //this unit is occupied
+			continue;
+
+		if(mu.path->length == 0)
+		{
+			delete mu.path;
+			it = this->moving_units.erase(it);
+			if(it == this->moving_units.end())
+				break;
+			continue;
+		}
+		pt = mu.path->path[mu.path->length-1];
+		if(this->unit_map->MoveUnit(mu.unit, pt.x, pt.y))
+		{
+			mu.waiting_since = 0;
+			mu.path->length--;
+			mu.unit->Move(pt.x, pt.y);
+		}
+		else if(mu.waiting_since == 0)
+		{
+			it->waiting_since = timeGetTime();
+		}
+		else if(timeGetTime() - mu.waiting_since > UNIT_PATIENCE)
+		{
+			//try to find another path
+			Cpath* npath;
+			this->pf->set_position(pt.x, pt.y, false);
+			npath = pf->find_path(Point2D(mu.unit->GetPosX(),mu.unit->GetPosY()), Point2D(mu.path->path[0].x, mu.path->path[0].y));
+			this->pf->set_position(pt.x, pt.y, true);
+			if(npath != NULL)
+			{
+				delete mu.path;
+				it->path = npath;
+			}
+			it->waiting_since = 0;
+		}
+	}
+}
+
+UnitMap* UnitManager::GetUnitMap()
+{
+	return this->unit_map;
+}
+
+UnitManager::~UnitManager(void)
+{
+}

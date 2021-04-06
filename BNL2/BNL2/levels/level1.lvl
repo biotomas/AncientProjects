@@ -1,0 +1,58 @@
+sizex 5; 
+sizey 5; 
+//map size in # of tiles
+tilesize 10.0;  
+//tile size
+ground_layers 1;
+//texture layers on the ground tiles
+texture 0 levels/untitled.bmp;      
+//tile texture
+
+tilemap  // sizex*sizey values expected, values are texture identifiers
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+0 0 0 0 0
+;
+
+wall 		// defines a wall element
+levels\wall.jpg // wall texture
+2.0 		//wall height
+		// wall edges, the defined structure must be convex
+		// define them in the counter-clockwise order CCW		
+45 -7
+47 -7
+47 45
+45 45
+;
+
+wall
+levels\wall.jpg
+2.0
+
+-5 -5
+-5 45
+-7 45
+-7 -5
+;
+
+wall
+levels\wall.jpg
+2.0
+
+-7 -5
+-7 -7
+45 -7
+45 -5
+;
+
+
+wall
+levels\transp.PNG
+1.5
+12 12
+15 12
+15 15
+12 15
+;

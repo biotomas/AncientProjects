@@ -1,0 +1,26 @@
+uses crt;
+
+
+function eval(s:string):real;
+  function vyraz:integer;
+  begin
+  end;
+  function clen:integer;
+  begin
+  end;
+  function faktor:integer;
+  begin
+  end;
+var kde:byte;
+
+begin
+kde:=1;
+
+
+end;
+
+
+
+
+begin
+end.

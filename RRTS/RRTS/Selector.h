@@ -1,0 +1,33 @@
+#pragma once
+#include "directxgraphics.h"
+#include <list>
+#include "MultiLayerTile.h"
+#include "Unit.h"
+#include "UnitMap.h"
+#include "DownPanel.h"
+
+class Selector : public Renderable
+{
+private:
+	int InitSelectionBox(LPDIRECT3DDEVICE9 device);
+	float box_size_x;
+	float box_size_y;
+	float box_x;
+	float box_y;
+	bool mousedown;
+	int	selected_panel_item;
+	DirectXGraphics* g;
+	D3DXVECTOR3 order;
+
+public:
+	virtual void render(LPDIRECT3DDEVICE9 device);
+	UnitList GetSelectedUnits(const UnitMap* map);
+	void GetOrderLocation(const UnitMap* map, int& outx, int& outy);
+	void MouseMove(int x, int y);
+	void LeftMouseDown(int x, int y);
+	void LeftMouseUp(int x, int y);
+	void RightMouse(int x, int y);
+	int GetSelectedPanelItem();
+	Selector(void);
+	~Selector(void);
+};

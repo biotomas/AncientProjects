@@ -1,0 +1,7 @@
+MIDlet-2: SS level editor,,editor.editormidlet
+MIDlet-1: Super Sokoban,,superSOKO.sokomain
+MIDlet-Vendor: Vendor
+MIDlet-Name: superSOKO
+MIDlet-Version: 1.0
+MicroEdition-Configuration: CLDC-1.1
+MicroEdition-Profile: MIDP-2.0

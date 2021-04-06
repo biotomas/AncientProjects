@@ -1,0 +1,29 @@
+K 25
+svn:wc:ra_dav:version-url
+V 68
+/svn/satgen/!svn/ver/33/trunk/src/main/java/cz/matfyz/ctrlaltdel/sat
+END
+Sat4jSolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/sat/Sat4jSolver.java
+END
+SolvingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/sat/SolvingException.java
+END
+RSatSolver.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/satgen/!svn/ver/33/trunk/src/main/java/cz/matfyz/ctrlaltdel/sat/RSatSolver.java
+END
+Solver.java
+K 25
+svn:wc:ra_dav:version-url
+V 80
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/sat/Solver.java
+END

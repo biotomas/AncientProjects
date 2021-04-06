@@ -1,0 +1,30 @@
+const szamok = 200;
+var x:array[1..szamok] of integer;
+t,i:integer;
+valtozas:boolean;
+
+begin
+writeln('------------------------');
+randomize;
+for i:=1 to szamok do
+    begin
+    x[i] := random(1000);
+    write(x[i],' ,');
+    end;
+writeln('------------------------------------------');
+valtozas := true;
+while(valtozas) do
+   begin
+   valtozas := false;
+   for i:=1 to szamok-1 do if x[i] > x[i+1] then
+     begin
+     valtozas := true;
+     t := x[i];
+     x[i] := x[i+1];
+     x[i+1] := t;
+     end
+   end;
+for i:= 1 to szamok do write(x[i],', ');
+writeln('kesz');
+
+end.

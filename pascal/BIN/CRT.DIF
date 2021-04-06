@@ -1,0 +1,56 @@
+Compare files:
+   crt.bak           12667   3-04-93   7:01a
+   crt.asm           13469   8-22-98   4:36p
+
+Changed line 45
+  >DelayCnt        DW      ?
+To
+  >DelayCnt        DD      ?
+
+Inserted after line 95
+  >
+  >        ;##############  disable interrupts during delay initialization
+  >        in      al,[21h]
+  >        push    ax
+  >        mov     al,0FEh
+  >        out     21h,al
+  >        ;##############
+  >
+
+Changed lines 105-107
+  >        MOV     CX,55
+  >        DIV     CX
+  >        MOV     DelayCnt,AX
+To
+  >        ; MOV   CX,55
+  >        ; DIV   CX
+  >        ; MOV   DelayCnt,AX
+  >        ;##################   fix for runtime error 200 on fast PCs
+  >        xchg    dx,cx
+  >        mov     bx,1193
+  >        mul     bx
+  >        xchg    cx,dx
+  >        xchg    dx,ax
+  >        mul     bx
+  >        add     ax,cx
+  >        adc     dx,0
+  >        MOV     word ptr DelayCnt,AX
+  >        MOV     word ptr DelayCnt+2,DX
+  >
+  >        pop     ax           ; enable interrupts
+  >        out     21h,al
+  >        ;###################
+  >
+
+Changed lines 447-448
+  >@@1:    MOV     AX,DelayCnt
+  >        XOR     DX,DX
+To
+  >@@1:    ; MOV   AX,DelayCnt
+  >        ; XOR   DX,DX
+  >        ; ####################    fix for runtime error 200 on fast PCs
+  >        MOV     AX,word ptr DelayCnt
+  >        MOV     DX,word ptr Delaycnt+2
+  >        ; ####################
+
+Comparison complete

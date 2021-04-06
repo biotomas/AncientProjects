@@ -1,0 +1,8 @@
+var a:string;
+begin
+a:='var a:string; begin a:=''';
+a:=a+a;
+a:=a+'a:=a+a; writeln(a); end.';
+a:=a+a;
+writeln(a);
+end.

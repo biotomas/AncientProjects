@@ -1,0 +1,9 @@
+K 10
+svn:ignore
+V 37
+target
+*.txt
+*.cnf
+rsat_2.01_win.exe
+
+END

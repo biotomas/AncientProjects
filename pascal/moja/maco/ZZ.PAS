@@ -1,0 +1,355 @@
+program zz;
+
+uses graph,crt,games,menu;
+
+const del=20;
+      v=10;
+      posun=5;
+      ss=10;
+
+type player=record
+                  name:string[20];
+                  x,y,ort:integer;
+                  health,col1,col2,s,wins:byte;
+                  end;
+     bullets=array[1..10] of record
+                                   x,y,ort:integer;
+                                   end;
+
+var p1,p2:player;
+    b1,b2:bullets;
+    scr:byte;
+    k:char;
+    i,j,gd,gm,x,y:integer;
+    s:string[2];
+    mapa:array[-1..129,-1..65] of boolean;
+    pl2n,heal:byte;
+
+procedure zaciatok;
+var i,j:integer;
+begin
+initnewkeyint;
+gd:=3; gm:=1;
+initgraph(gd,gm,'');
+heal:=30;
+with p1 do begin
+           name:='protagonist'; x:=100; y:=100; col1:=4; col2:=1; ort:=90; s:=0; health:=heal; wins:=0;
+           end;
+with p2 do begin
+           name:='victim'; x:=500; y:=200; col1:=2; col2:=6; ort:=270; s:=0; health:=heal; wins:=0;
+           end;
+for i:=2 to 126 do for j:=2 to 62 do mapa[i,j]:=true;
+for i:=-1 to 129 do begin
+                          mapa[i,-1]:=false;
+                          mapa[i,0]:=false;
+                          mapa[i,1]:=false;
+                          mapa[i,63]:=false;
+                          mapa[i,64]:=false;
+                          mapa[i,65]:=false;
+                    end;
+for i:=-1 to 65 do begin
+                         mapa[-1,i]:=false;
+                         mapa[0,i]:=false;
+                         mapa[1,i]:=false;
+                         mapa[127,i]:=false;
+                         mapa[128,i]:=false;
+                         mapa[129,i]:=false;
+                   end;
+for i:=12 to 52 do begin for j:=22 to 25 do begin mapa[j,i]:=false; end; end;
+pl2n:=length(p2.name)*8;
+end;
+
+procedure koniec;
+begin
+closegraph;
+setoldkeyint;
+end;
+
+procedure screen;
+begin
+setactivepage(scr);
+scr:=1-scr;
+setvisualpage(scr);
+delay(del);
+cleardevice;
+end;
+
+procedure prostredie;
+begin
+setfillstyle(1,5);
+bar(0,0,640,4);
+bar(0,0,4,350);
+bar(636,0,640,350);
+bar(0,316,640,319);
+bar(0,346,640,350);
+bar(122,60,124,260);
+bar(111,60,113,260);
+bar(113,60,122,61);
+bar(113,259,122,260);
+end;
+
+procedure stav;
+begin
+settextstyle(1,0,2);
+setcolor(p2.col1);
+outtextxy((280-pl2n),325,p2.name);
+str(p2.health,s);
+outtextxy(20,330,s);
+rectangle(45,325,150,340);
+
+setcolor(p1.col1);
+outtextxy(360,325,p1.name);
+str(p1.health,s);
+outtextxy(604,330,s);
+rectangle(595,325,490,340);
+
+
+setcolor(14);
+outtextxy(316,330,':');
+str(p1.wins,s);
+outtextxy(330,330,s);
+str(p1.wins,s);
+if p1.wins<9 then outtextxy(302,330,s) else outtextxy(294,330,s);
+end;
+
+procedure addshot(pl:byte; x,y,ort:integer);
+var i,j:integer;
+begin
+case ort of
+0: begin i:=6; j:=-8; end;
+90: begin i:=8; j:=6; end;
+180: begin i:=-6; j:=8; end;
+270: begin i:=-8; j:=-6; end;
+45: begin i:=9; j:=-1; end;
+135: begin i:=1; j:=9; end;
+225: begin i:=-9; j:=1; end;
+315: begin i:=-1; j:=-9; end;
+end;
+
+if pl=1 then
+   if p1.s<10 then begin
+                         inc(p1.s);
+                         b1[p1.s].x:=x+i;
+                         b1[p1.s].y:=y+j;
+                         b1[p1.s].ort:=ort;
+                   end;
+if pl=2 then
+   if p2.s<10 then begin
+                         inc(p2.s);
+                         b2[p2.s].x:=x+i;
+                         b2[p2.s].y:=y+j;
+                         b2[p2.s].ort:=ort;
+                   end;
+end;
+
+
+procedure checkhit;
+var i:byte;
+begin
+for i:=p1.s downto 1 do begin
+                         if (((p2.x-7)<(b1[i].x)) and ((b1[i].x)<(p2.x+7)))
+                         and (((p2.y-7)<(b1[i].y)) and ((b1[i].y)<(p2.y+7))) then
+                         begin
+                          if p1.s = i then dec(p1.s) else
+                                                         begin
+                                                          b1[i].x:=b1[p1.s].x;
+                                                          b1[i].y:=b1[p1.s].y;
+                                                          b1[i].ort:=b1[p1.s].ort;
+                                                          dec(p1.s);
+                                                         end;
+                          dec(p2.health);
+                         end;
+                        end;
+
+for i:=p2.s downto 1 do begin
+                         if (((p1.x-7)<(b2[i].x)) and ((b2[i].x)<(p1.x+7)))
+                         and (((p1.y-7)<(b2[i].y)) and ((b2[i].y)<(p1.y+7))) then
+                         begin
+                          if p2.s = i then dec(p2.s) else
+                                                         begin
+                                                          b2[i].x:=b2[p2.s].x;
+                                                          b2[i].y:=b2[p2.s].y;
+                                                          b2[i].ort:=b2[p2.s].ort;
+                                                          dec(p2.s);
+                                                         end;
+                          dec(p1.health);
+                         end;
+                        end;
+end;
+
+
+
+
+procedure shots;
+var i:byte;
+    vx,vy:integer;
+begin
+for i:=p1.s downto 1 do begin
+                         setcolor(p1.col2);
+                         circle(b1[i].x,b1[i].y,2);
+                         b1[i].x:=b1[i].x + round(ss*(sin(pi/180*(b1[i].ort))));
+                         vx:=b1[i].x + round((ss/2)*(sin(pi/180*(b1[i].ort))));
+                         b1[i].y:=b1[i].y - round(ss*(cos(pi/180*(b1[i].ort))));
+                         vy:=b1[i].y - round((ss/2)*(cos(pi/180*(b1[i].ort))));
+                         if (not(mapa[((b1[i].x) div 5),(b1[i].y div 5)])) or (not(mapa[(vx div 5),(vy div 5)])) then begin
+                                                                                     if p1.s = i then dec(p1.s) else
+                                                                                     begin
+                                                                                      b1[i].x:=b1[p1.s].x;
+                                                                                      b1[i].y:=b1[p1.s].y;
+                                                                                      b1[i].ort:=b1[p1.s].ort;
+                                                                                      dec(p1.s);
+                                                                                     end;
+                                                                                end;
+                        end;
+for i:=p2.s downto 1 do begin
+                         setcolor(p2.col2);
+                         circle(b2[i].x,b2[i].y,2);
+                         b2[i].x:=b2[i].x + round(ss*(sin(pi/180*(b2[i].ort))));
+                         vx:=b2[i].x + round((ss/2)*(sin(pi/180*(b2[i].ort))));
+                         b2[i].y:=b2[i].y - round(ss*(cos(pi/180*(b2[i].ort))));
+                         vy:=b2[i].y - round((ss/2)*(cos(pi/180*(b2[i].ort))));
+                         if (not(mapa[((b2[i].x) div 5),((b2[i].y) div 5)])) or (not(mapa[(vx div 5),(vy div 5)])) then begin
+                                                                                     if p2.s = i then dec(p2.s) else
+                                                                                     begin
+                                                                                      b2[i].x:=b2[p2.s].x;
+                                                                                      b2[i].y:=b2[p2.s].y;
+                                                                                      b2[i].ort:=b2[p2.s].ort;
+                                                                                      dec(p2.s);
+                                                                                     end;
+                                                                                end;
+                        end;
+
+end;
+
+procedure hrac(s1,s2,smer:integer; f1,f2:byte);
+begin
+setcolor(f1);
+case smer of
+0: begin
+        rectangle(s1-5,s2,s1-7,s2-8);
+        rectangle(s1+5,s2,s1+7,s2-8);
+   end;
+90: begin
+        rectangle(s1,s2-5,s1+8,s2-7);
+        rectangle(s1,s2+5,s1+8,s2+7);
+   end;
+180: begin
+        rectangle(s1-5,s2,s1-7,s2+8);
+        rectangle(s1+5,s2,s1+7,s2+8);
+   end;
+270: begin
+        rectangle(s1,s2-5,s1-8,s2-7);
+        rectangle(s1,s2+5,s1-8,s2+7);
+   end;
+45: begin
+   line(s1-3,s2-3,s1-5,s2-5);
+   line(s1+3,s2+3,s1+5,s2+5);
+   line(s1-3,s2-3,s1+2,s2-7);
+   line(s1+3,s2+3,s1+7,s2-2);
+   line(s1-5,s2-5,s1,s2-10);
+   line(s1+5,s2+5,s1+10,s2);
+   line(s1+2,s2-7,s1,s2-10);
+   line(s1+7,s2-2,s1+10,s2);
+   end;
+135: begin
+   line(s1+3,s2-3,s1+5,s2-5);
+   line(s1-3,s2+3,s1-5,s2+5);
+   line(s1+3,s2-3,s1+7,s2+2);
+   line(s1-3,s2+3,s1+2,s2+7);
+   line(s1+5,s2-5,s1+10,s2);
+   line(s1-5,s2+5,s1,s2+10);
+   line(s1+7,s2+2,s1+10,s2);
+   line(s1+2,s2+7,s1,s2+10);
+   end;
+225: begin
+   line(s1-3,s2-3,s1-5,s2-5);
+   line(s1+3,s2+3,s1+5,s2+5);
+   line(s1-3,s2-3,s1-7,s2+2);
+   line(s1+3,s2+3,s1-2,s2+7);
+   line(s1-5,s2-5,s1-10,s2);
+   line(s1+5,s2+5,s1,s2+10);
+   line(s1-7,s2+2,s1-10,s2);
+   line(s1-2,s2+7,s1,s2+10);
+   end;
+315: begin
+   line(s1+3,s2-3,s1+5,s2-5);
+   line(s1-3,s2+3,s1-5,s2+5);
+   line(s1+3,s2-3,s1-2,s2-7);
+   line(s1-3,s2+3,s1-7,s2-2);
+   line(s1+5,s2-5,s1,s2-10);
+   line(s1-5,s2+5,s1-10,s2);
+   line(s1-2,s2-7,s1,s2-10);
+   line(s1-7,s2-2,s1-10,s2);
+   end;
+end;
+if ((smer mod 10)=0) then
+begin
+ setfillstyle(1,f1);
+ bar(s1-5,s2-5,s1+5,s2+5);
+ setfillstyle(1,f2);
+ setcolor(f2);
+ bar(s1-2,s2-2,s1+2,s2+2);
+end else
+begin
+ line(s1-6,s2,s1,s2-6);
+ line(s1+6,s2,s1,s2-6);
+ line(s1-6,s2,s1,s2+6);
+ line(s1+6,s2,s1,s2+6);
+ setfillstyle(1,f1);
+ floodfill(s1,s2,f1);
+ setfillstyle(1,f2);
+ setcolor(f2);
+ line(s1-3,s2,s1,s2-3);
+ line(s1+3,s2,s1,s2-3);
+ line(s1-3,s2,s1,s2+3);
+ line(s1+3,s2,s1,s2+3);
+ floodfill(s1,s2,f2);
+end;
+
+
+end;
+
+begin
+gamemenu;
+zaciatok;
+scr:=1;
+repeat
+
+   shots;
+   checkhit;
+
+   if keydown[upscan] then begin p1.ort:=0; if mapa[(p1.x div 5),((p1.y-posun) div 5)] then dec(p1.y,posun); end;
+   if keydown[downscan] then begin p1.ort:=180; if mapa[(p1.x div 5),((p1.y+posun) div 5)] then inc(p1.y,posun); end;
+   if keydown[leftscan] then begin p1.ort:=270; if mapa[((p1.x-posun) div 5),(p1.y div 5)] then dec(p1.x,posun); end;
+   if keydown[rightscan] then begin p1.ort:=90; if mapa[((p1.x+posun) div 5),(p1.y div 5)] then inc(p1.x,posun); end;
+   if (keydown[upscan]) and (keydown[rightscan]) then p1.ort:=45;
+   if (keydown[downscan]) and (keydown[rightscan]) then p1.ort:=135;
+   if (keydown[downscan]) and (keydown[leftscan]) then p1.ort:=225;
+   if (keydown[upscan]) and (keydown[leftscan]) then p1.ort:=315;
+
+   if keydown[scanof('w')] then begin p2.ort:=0; if mapa[(p2.x div 5),((p2.y-posun) div 5)] then dec(p2.y,posun); end;
+   if keydown[scanof('s')] then begin p2.ort:=180; if mapa[(p2.x div 5),((p2.y+posun) div 5)] then inc(p2.y,posun); end;
+   if keydown[scanof('a')] then begin p2.ort:=270; if mapa[((p2.x-posun) div 5),(p2.y div 5)] then dec(p2.x,posun); end;
+   if keydown[scanof('d')] then begin p2.ort:=90; if mapa[((p2.x+posun) div 5),(p2.y div 5)] then inc(p2.x,posun); end;
+   if (keydown[scanof('w')]) and (keydown[scanof('d')]) then p2.ort:=45;
+   if (keydown[scanof('s')]) and (keydown[scanof('d')]) then p2.ort:=135;
+   if (keydown[scanof('s')]) and (keydown[scanof('a')]) then p2.ort:=225;
+   if (keydown[scanof('w')]) and (keydown[scanof('a')]) then p2.ort:=315;
+
+   screen;
+   prostredie;
+   stav;
+   hrac(p1.x,p1.y,p1.ort,p1.col1,p1.col2);
+   hrac(p2.x,p2.y,p2.ort,p2.col1,p2.col2);
+
+   if wasdown[scanof('p')] then begin
+                                  addshot(1,p1.x,p1.y,p1.ort);
+                                end;
+   if wasdown[ctrlscan] then begin
+                                 addshot(2,p2.x,p2.y,p2.ort);
+                             end;
+
+   clearwasdownarray;
+until (keydown[escscan]) or (p1.health=0) or (p2.health=0);
+koniec;
+end.

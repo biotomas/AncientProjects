@@ -1,0 +1,18 @@
+layers 2
+sizex 3
+sizey 3
+
+tile s stone.jpg
+tile p podlaha.jpeg
+tile t transp.PNG
+
+layer
+s p s
+p p p
+s s s
+
+
+layer
+- t t
+- - -
+- - -

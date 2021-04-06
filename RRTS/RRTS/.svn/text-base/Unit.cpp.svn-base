@@ -1,0 +1,119 @@
+#include "Unit.h"
+
+Unit::Unit(UnitType* type, int posx, int posy)
+{
+	this->type = type;
+	this->last_frame_time = 0;
+	this->posx = posx;
+	this->posy = posy;
+	this->status = US_IDLE;
+	this->pos = D3DXVECTOR3((float)posx, 0, (float)posy);
+	D3DXMatrixIdentity(&this->orientation);
+	this->player = Csound::Instance();
+	this->hitpoints = this->type->initial_hitpoints;
+}
+
+void Unit::UpdatePosition()
+{
+	if(this->status == US_MOVING)
+	{
+		DWORD time = timeGetTime();
+		pos = this->start + (time - this->start_time)*(this->type->speed)*diff;
+		if((time - this->start_time)*(this->type->speed) > 1.0f)
+		{
+			this->status = US_IDLE;
+			this->pos = D3DXVECTOR3((float)this->posx, 0, (float)this->posy);
+		}
+	}
+}
+
+void Unit::render(LPDIRECT3DDEVICE9 device)
+{
+	this->UpdatePosition();
+
+
+	D3DXMATRIXA16 trans;
+	D3DXMatrixTranslation(&trans, this->pos.x*UNIT_TILESIZE, 0, this->pos.z*UNIT_TILESIZE);
+	device->SetTransform(D3DTS_WORLD, &(this->orientation*trans));
+
+	DWORD time = timeGetTime();
+
+	if(this->status == US_ATTACKING && this->type->attack_mesh)
+	{
+		if(time - this->last_frame_time > UNIT_FRAME_TIME)
+			this->status = US_IDLE;
+		this->type->attack_mesh->render(device);
+	}
+	else
+		this->type->mesh->render(device);
+}
+
+const UnitType* Unit::GetType()
+{
+	return this->type;
+}
+
+const int* Unit::GetHPPointer()
+{
+	return &(this->hitpoints);
+}
+
+void Unit::Selected()
+{
+	this->player->PlaySound(this->type->snd_seleceted);
+}
+
+void Unit::StartMoving()
+{
+	this->player->PlaySound(this->type->snd_move);
+}
+
+bool Unit::Moving()
+{
+	return (this->status == US_MOVING);
+}
+
+int Unit::GetPosX()
+{
+	return this->posx;
+}
+int Unit::GetPosY()
+{
+	return this->posy;
+}
+
+void Unit::Move(int newx, int newy)
+{
+	D3DXMatrixRotationY(&this->orientation, atan2f( (float)newx-this->posx, (float)newy-this->posy));
+	this->start = D3DXVECTOR3((float)this->posx, 0, (float)this->posy);
+	this->goal = D3DXVECTOR3((float)newx, 0, (float)newy);
+	this->diff = this->goal - this->start;
+
+	this->status = US_MOVING;
+	this->start_time = timeGetTime();
+	this->posx = newx;
+	this->posy = newy;
+}
+
+bool Unit::Attack(int newx, int newy)
+{
+	if(max(abs(newx - this->posx), abs(newy - this->posy)) <= this->type->range) //in range
+	{
+		if(this->type->attack_type == UAT_RANGED)
+		{
+			ShotManager::GetDefaultInstance()->AddShot(new Shot(this->pos, D3DXVECTOR3((float)newx, 0, (float)newy)));
+		}
+		//set orientation
+		D3DXMatrixRotationY(&this->orientation, atan2f( (float)newx-this->posx, (float)newy-this->posy));
+		//attack
+		this->status = US_ATTACKING;
+		this->last_frame_time = timeGetTime();
+		this->player->PlaySound(this->type->snd_attack);
+		return true;
+	}
+	return false;
+}
+
+Unit::~Unit(void)
+{
+}

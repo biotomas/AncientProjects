@@ -1,0 +1,57 @@
+# depslib dependency file v1.0
+1235941416 source:/home/tomas/programy/quicksat/main.c
+	<stdio.h>
+	<stdlib.h>
+
+1238013407 
+
+1238013841 source:d:\projects\diplomka\solver\quicksat\main.c
+	"FormulaParser.h"
+	<stdio.h>
+	"CommonStructures.h"
+
+1238014106 uctures.h"
+
+1238012915 d:\projects\diplomka\solver\quicksat\formulaparser.h
+	"CommonStructures.h"
+
+1238014339 d:\projects\diplomka\solver\quicksat\commonstructures.h
+
+1238016827 source:d:\projects\diplomka\solver\quicksat\formulaparser.c
+	"FormulaParser.h"
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+
+1238013349 d:\projects\diplomka\solver\quicksat\maco.h
+	"FormulaParser.h"
+
+1238013349 rser.h"
+
+1238013407 source:d:\projects\diplomka\solver\quicksat\maco.c
+	"maco.h"
+
+1238014106 source:d:\projects\diplomka\solver\quicksat\commonstructures.c
+	"CommonStructures.h"
+
+1238507398 source:/afs/ms.mff.cuni.cz/u/b/balyt5am/Projects/sat/sat/solver/quicksat/CommonStructures.c
+	"CommonStructures.h"
+
+1238507398 /afs/ms.mff.cuni.cz/u/b/balyt5am/Projects/sat/sat/solver/quicksat/CommonStructures.h
+
+1238514954 source:/afs/ms.mff.cuni.cz/u/b/balyt5am/Projects/sat/sat/solver/quicksat/FormulaParser.c
+	"FormulaParser.h"
+	<stdio.h>
+	<stdlib.h>
+	<ctype.h>
+	<malloc.h>
+	<string.h>
+
+1238507398 /afs/ms.mff.cuni.cz/u/b/balyt5am/Projects/sat/sat/solver/quicksat/FormulaParser.h
+	"CommonStructures.h"
+
+1238514926 source:/afs/ms.mff.cuni.cz/u/b/balyt5am/Projects/sat/sat/solver/quicksat/main.c
+	"FormulaParser.h"
+	<stdio.h>
+	"CommonStructures.h"
+

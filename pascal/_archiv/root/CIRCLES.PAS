@@ -1,0 +1,123 @@
+program circles;
+uses graph,crt;
+var gd,gm,i,r,t,h,g,d,e,f,x,y,w,p,a1,a2,a:integer;
+begin
+r:=4;t:=0;h:=15;
+gd:=detect;
+initgraph(gd,gm,'c:\tp7\bgi');
+begin
+setbkcolor(1);
+setcolor(cyan);
+pieslice(320,240,0,0,125);
+settextstyle(1,0,4);
+outtextxy(37,220,'Written by Leslie Bencso,"Circles I."');
+settextstyle(1,0,1);setcolor(red);
+outtextxy(200,250,'Press enter to start');
+readln;
+bar(0,0,640,480);
+for i:=1 to 15 do begin
+r:=r+10;t:=t+1;h:=h-1;
+outtextxy(20,20,'Loading...');
+textbackground(h);
+setcolor(t);
+circle(320,220,r);
+delay(500);
+end;
+setcolor(8);
+outtextxy(40,40,'Press enter!');
+readln;
+g:=0;
+bar(0,0,640,480);
+for d:=1 to 200 do begin
+g:=g+2;
+setcolor(black);
+circle(320,240,g);
+delay(80);
+end;
+setcolor(11);
+bar(0,0,640,480);
+e:=0;f:=0;
+for i:=1 to 200 do begin
+e:=e+2;f:=f+2;
+setcolor(1);
+circle(210,240,e);
+setcolor(6);
+circle(420,240,f);
+delay(80);
+end;
+setcolor(9);
+bar(0,0,640,480);
+x:=0;
+for i:=1 to 230 do begin
+x:=x+2;
+setcolor(1);
+circle(160,120,x);
+setcolor(4);
+circle(480,120,x);
+setcolor(5);
+circle(160,360,x);
+setcolor(2);
+circle(480,360,x);
+delay(80);
+end;
+y:=0;
+for i:=1 to 90 do begin
+y:=y+3;
+setcolor(128);
+circle(320,240,y);
+delay(80);
+end;
+w:=0;p:=0;
+for i:=1 to 15 do begin
+w:=w+1;
+p:=p+6;
+setcolor(w);
+circle(320,150,p);
+circle(320,330,p);
+circle(160,240,p);
+circle(480,240,p);
+delay(180);
+end;
+bar(0,0,640,480);
+a1:=0;
+for i:=0 to 180 do begin
+a1:=a1+2;
+setcolor(green);
+circle(100,240,a1);
+setcolor(blue);
+circle(200,240,a1);
+setcolor(red);
+circle(300,240,a1);
+setcolor(black);
+circle(400,240,a1);
+setcolor(cyan);
+circle(500,240,a1);
+delay(80);
+end;
+bar(100,100,540,380);
+a:=0;
+for i:=1 to 200 do begin
+a:=a+3;
+setcolor(14);
+circle(220,200,a);
+setcolor(13);
+circle(270,200,a);
+setcolor(12);
+circle(320,200,a);
+setcolor(11);
+circle(370,200,a);
+setcolor(10);
+circle(420,200,a);
+setcolor(9);
+circle(470,200,a);
+setcolor(8);
+circle(170,200,a);
+setcolor(7);
+circle(120,200,a);
+delay(80);
+end;
+settextstyle(1,0,9);setcolor(red);
+outtextxy(140,250,'THE END');
+readln;
+end;
+end.

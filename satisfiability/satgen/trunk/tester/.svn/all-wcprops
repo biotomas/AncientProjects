@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 36
+/svn/satgen/!svn/ver/42/trunk/tester
+END
+rsat.sh
+K 25
+svn:wc:ra_dav:version-url
+V 44
+/svn/satgen/!svn/ver/40/trunk/tester/rsat.sh
+END
+rsat
+K 25
+svn:wc:ra_dav:version-url
+V 41
+/svn/satgen/!svn/ver/40/trunk/tester/rsat
+END
+SatElite
+K 25
+svn:wc:ra_dav:version-url
+V 45
+/svn/satgen/!svn/ver/40/trunk/tester/SatElite
+END
+grimm
+K 25
+svn:wc:ra_dav:version-url
+V 42
+/svn/satgen/!svn/ver/40/trunk/tester/grimm
+END
+tester.py
+K 25
+svn:wc:ra_dav:version-url
+V 46
+/svn/satgen/!svn/ver/42/trunk/tester/tester.py
+END
+result2.txt
+K 25
+svn:wc:ra_dav:version-url
+V 48
+/svn/satgen/!svn/ver/42/trunk/tester/result2.txt
+END

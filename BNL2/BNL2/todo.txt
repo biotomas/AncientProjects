@@ -1,0 +1,7 @@
+TODO:
+
+GameMap destructor
+GameManager::LoadLevel
+
+- smykanie tanku
+- nastavovanie vlastnosti tanku

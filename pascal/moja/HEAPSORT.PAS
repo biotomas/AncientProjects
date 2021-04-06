@@ -1,0 +1,97 @@
+uses crt;
+const max=10000;
+type pole=array[1..max] of word;
+var b,a:pole;
+    n,i:word;
+    cnt:longint;
+
+procedure wrt;
+begin
+for i:=1 to max do write(a[i],', ');
+writeln;
+end;
+
+procedure heapsort(var a:pole);
+  procedure makeheap(L,P:word); {opravuje len potomkov L-teho bodu max po P}
+  var i,j,x:word;
+  begin
+    i:=L;
+    j:=2*i;
+    x:=a[L];
+    while j <= P do
+      begin
+        if j+1 <= P then if a[j+1] < a[j] then inc(j);
+        if x <= a[j] then break;
+        a[i]:=a[j];
+        i:=j;
+        j:=2*i;
+        inc(cnt); {   <<<***************************}
+      end;{of while}
+    a[i]:=x;
+  end;{of makeheap}
+
+begin
+n:=(max div 2);
+for i:=n downto 1 do makeheap(i,max);
+for i:=max downto 1 do
+  begin
+    n:=a[1];
+    a[1]:=a[i];
+    a[i]:=n;
+    makeheap(1,i-1);
+  end; {of for}
+end;
+
+procedure shakesort(var a:pole);
+var i,l,p:word;
+    x:word;
+    ok:boolean;
+
+procedure swap;
+begin
+x:=a[i];
+a[i]:=a[i+1];
+a[i+1]:=x;
+ok:=false;
+inc(cnt);{   <<<***************************}
+end;
+
+
+begin
+ l:=1;
+ p:=max;
+ repeat
+   ok:=true;
+   for i:=l to p-1 do if a[i] > a[i+1] then swap;
+   dec(p);
+   for i:=p-1 downto l do if a[i] > a[i+1] then swap;
+   inc(l);
+ until ok;
+end;
+
+
+begin
+randomize;
+clrscr;
+for i:=1 to max do a[i]:=random(maxint);
+wrt;
+b:=a;
+readkey;
+write('H!');
+cnt:=0;
+
+       shakesort(a);
+
+writeln(cnt);
+wrt;
+cnt:=0;
+readkey;
+for i:=1 to max do a[i]:=random(maxint);
+wrt;
+write('H!');
+
+            heapsort(a);
+wrt;
+writeln(cnt);
+readkey;
+end.

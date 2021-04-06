@@ -1,0 +1,51 @@
+program dimensions;
+uses graph,crt,dim;
+var gd,gm: integer;
+    cex,cey,i,j,z: integer;
+    x,y:array[1..8] of integer;
+    mb,mx,my:integer;
+    k:char;
+    go:boolean;
+
+begin
+gd:=3;
+gm:=1;
+initgraph(gd,gm,'c:\tp\bgi');
+
+setcentre(320,440);
+setcolor(15);
+{Z dline(0,0,-500,0,0,500);
+setcolor(15);
+X dline(-500,0,0,500,0,0);
+setcolor(15);
+Y dline(0,-500,0,0,500,0);}
+cex:=320;
+cey:=240;
+setcentre(320,240);
+
+repeat
+setcolor(8);
+for i:=-10 to 10 do dline(i*40,0,-600,i*40,0,600);
+for i:=-10 to 10 do dline(600,0,i*40,-600,0,i*40);
+setcolor(15);
+cube(-160,-100,120,-120,-20,40);
+cube(80,-20,0,160,40,120);
+cube(0,-20,-200,120,75,-240);
+  asm
+   mov ax,3
+   int 33h
+   mov mx,cx
+   mov my,dx
+   mov mb,bx
+  end;
+egerke(mx,my,65);
+if mx=0 then begin  cex:=cex+6; end;
+if mx=getmaxx then begin  cex:=cex-6; end;
+if my=getmaxy then begin cey:=cey-6; end;
+if my=0 then begin  cey:=cey+6; end;
+setcentre(cex,cey);
+if keypressed then k:=readkey;
+screen;
+until ord(k)=27;
+closegraph;
+end.

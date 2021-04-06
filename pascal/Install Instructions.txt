@@ -1,0 +1,35 @@
+TURBO PASCAL 7.0 ENGLISH INSTALL INSTRUCTIONS - WINDOWS 95/98
+
+1. This should be in the 'c:\tp' directory if it is not put it there
+
+2. Copy 'c:\tp\Turbo Pascal 7.0.pif' (shortcut) to 'c:\windows\start menu\programs' directory
+
+3. Open 'My Computer' and use the menus 'View > Folder Options...'
+
+4. In the 'File Types' tab click 'New Type...'
+
+5. Ignore 'Change Icon...' button for now
+
+6. Make 'Description of type' box read 'Turbo Pascal Source'
+
+7. Make 'Associated extension' box read 'pas'
+
+8. Make 'Content Type (MIME)' box read 'text/plain'
+
+9. Make 'Default Extension for Content Type' box read '.txt'
+
+10. Click 'New...'
+
+11. Make 'Action' box read 'open'
+
+12. Make 'Aplication used to perform action' box read 'C:\TP\BIN\Tpx.exe'
+
+13. Click 'Ok'
+
+14. Now Click 'Change Icon...' button and insert 'C:\TP\BIN\Turbo.ico' in the 'File name' box, press enter twice.
+
+15. Click 'Ok'
+
+16. Click 'Ok'
+
+17. Done you can now use Turbo Pascal 7.0 En

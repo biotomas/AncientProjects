@@ -1,0 +1,11 @@
+uses bmp,graph;
+
+var gd,gm:integer;
+
+begin
+initgraph(gd,gm,'c:\tp\bgi');
+
+load_bmp(10,10,'ahoj.bmp');
+readln;
+closegraph;
+end.

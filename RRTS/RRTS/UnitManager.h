@@ -1,0 +1,34 @@
+#pragma once
+#include "Selector.h"
+#include "UnitMap.h"
+#include "Cpathfinder.h"
+#include <list>
+#include "csound.h"
+#include "DownPanel.h"
+
+class UnitManager
+{
+private:
+	struct MovingUnit
+	{
+		Cpath*	path;
+		Unit*	unit;
+		DWORD	waiting_since;
+	};
+	typedef std::list<MovingUnit> MovingUnitList;
+
+	MovingUnitList	moving_units;
+	UnitMap*		unit_map;
+	Selector*		selector;
+	UnitList		selected_units;
+	Cpathfinder*	pf;
+
+public:
+	UnitManager(void);
+	void GameCycle(void);
+	void ProcessOrder(void);
+	void NewSelection(void);
+	void SetSelector(Selector* selector);
+	UnitMap* GetUnitMap(void);
+	~UnitManager(void);
+};

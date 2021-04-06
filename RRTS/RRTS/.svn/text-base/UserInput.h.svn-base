@@ -1,0 +1,82 @@
+#pragma once
+#include <dinput.h>
+
+enum InputDevice
+{
+	id_keyboard,
+	id_mouse,
+	id_gamepad,
+	id_all
+};
+
+enum ICODE_CONSTANTS
+{
+	// the first 256 values are for keyboard keycodes: DIK_XYZ
+	LAST_KEYCODE = 256, //one after last
+
+	// mouse codes
+	ICODE_mouse_left,
+	ICODE_mouse_right,
+	ICODE_mouse_middle,
+	ICODE_mouse_wheel_up,
+	ICODE_mouse_wheel_down,
+	ICODE_mouse_move,
+
+	// gamepad
+	ICODE_gamepad_direction_axis,
+	ICODE_gamepad_left,
+	ICODE_gamepad_right,
+	ICODE_gamepad_up,
+	ICODE_gamepad_down,
+	ICODE_gamepad_button0,
+	ICODE_gamepad_button1,
+	ICODE_gamepad_button2,
+	ICODE_gamepad_button3,
+	ICODE_gamepad_button4,
+	ICODE_gamepad_button5,
+	ICODE_gamepad_button6,
+	ICODE_gamepad_button7,
+
+	// indicates the size of this set of constants
+	LAST_ICODE
+};
+
+class InputAction //interface
+{
+public:
+	virtual void Perform_action(int x, int y) = 0;
+	virtual ~InputAction(){}
+};
+
+class UserInput // supports keyboard and gamepad and mouse
+{
+private:
+	typedef unsigned int ICODE; // look at ICODE_CONSTANTS
+
+	InputAction*			actions_map[LAST_ICODE];
+
+	LPDIRECTINPUT8			dir_inp;
+	LPDIRECTINPUTDEVICE8	keyboard_device;
+	LPDIRECTINPUTDEVICE8	mouse_device;
+	LPDIRECTINPUTDEVICE8	gamepad_device;
+
+	DIMOUSESTATE			mouse_state;
+	DIJOYSTATE				gamepad_state;
+//	char					keyboard_state[256];
+
+	void ProcessMouse();
+	void ProcessKeyboard();
+	void ProcessGamepad();
+
+	bool AcquireDevice(InputDevice dev);
+	void UnacquireDevice(InputDevice dev);
+
+public:
+	UserInput(HINSTANCE hInst, HWND hWnd);
+
+	void AddInputAction(ICODE code, InputAction* action);
+	void ClearInputAction(ICODE code);
+
+	void CollectInput(InputDevice dev);
+	~UserInput(void);
+};

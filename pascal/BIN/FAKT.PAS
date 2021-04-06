@@ -1,0 +1,17 @@
+function faktorial(i:longint):longint;
+begin
+if i = 1 then faktorial := 1
+else faktorial := i * faktorial(i-1);
+end;
+
+function fib(i:longint):longint;
+begin
+if i <= 2 then fib:=1
+else fib:=fib(i-1) + fib(i-2);
+end;
+
+var i:integer;
+begin
+for i:= 1 to 100 do
+writeln(i, ': ', fib(i));
+end.

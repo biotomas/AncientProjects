@@ -1,0 +1,49 @@
+#pragma once
+#include "directxgraphics.h"
+#include "WriteText.h"
+#include "unit.h"
+#include <list>
+#include <string>
+
+class DownPanel : public Sprite
+{
+private:
+	static const int ITEM_LEFT_OFFSET = 50;
+	static const int ITEM_LEFT_MULTIPLIER = 100;
+
+	struct UnitInfo
+	{
+		std::string	name;
+		const int*	hitpoints;
+		int			attack;
+		float		speed;
+	};
+	typedef std::list<UnitInfo> UnitInfoList;
+
+	UnitInfoList			unit_infos;
+	static DownPanel*		default_instance;
+	int						width,
+							height,
+							top,
+							left;
+	TexturePtr				background_texture;
+	WriteText				writer;
+
+	void Write(std::string msg, int x, int y);
+	void Write(int msg, int x, int y);
+	void Write(float msg, int x, int y);
+
+public:
+	static DownPanel* GetDefaultInstance(void);
+	virtual void render(LPD3DXSPRITE spritedevice);
+	void SetPositionSize(int left, int top, int width, int height);
+	void Initialize(DirectXGraphics* g);
+
+	int PanelItemClicked(int x, int y);
+
+	void AddUnitInfo(std::string name, const int* hitpoints, int attack, float speed);
+	void ClearUnitInfos();
+
+	DownPanel(void);
+	~DownPanel(void);
+};

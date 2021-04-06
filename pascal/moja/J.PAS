@@ -1,0 +1,24 @@
+uses crt;
+type vztah=array[1..100,1..100] of byte;
+     pojmy=record
+     s:array[1..100] of string[20];
+     l:byte;
+     end;
+
+var fp:file of pojmy;
+    fv:file of vztah;
+    s:string[80];
+    p:pojmy;
+    v:vztah;
+    i,j,k:byte;
+
+begin
+assign(fp,'pojmy.j');
+assign(fv,'vztahy.j');
+reset(fp);
+reset(fv);
+
+
+close(fp);
+close(fv);
+end.

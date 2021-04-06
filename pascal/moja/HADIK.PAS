@@ -1,0 +1,88 @@
+uses graph, crt;
+
+const spd=20;
+      max=2000;
+type bod=record x,y:integer; end;
+var gd,gm:integer;
+    k : char;
+    h,smer,l,z : integer;
+    had:array[0..max] of bod;
+    food:bod;
+
+procedure jedlo;
+begin
+if (had[z].x=food.x) and (had[z].y=food.y) then
+  begin
+    if l<1999 then inc(l);
+    setfillstyle(1,0); {cierno}
+    PieSlice(food.x*10,food.y*10 , 0, 360, 5);
+    repeat
+    food.x:=random(63)+1;
+    food.y:=random(47)+1;
+    until getpixel(food.x*10,food.y*10+2)=0;
+    setfillstyle(1,14); {jedlo}
+    PieSlice(food.x*10,food.y*10 , 0, 360, 5);
+  end;
+end;
+
+
+begin
+initgraph(gd,gm,'c:\tp\bgi');
+
+had[1000].x:=26;
+had[1000].y:=25;
+had[1001].x:=27;
+had[1001].y:=25;
+had[1002].x:=28;
+had[1002].y:=25;
+z:=1000;
+l:=3;
+smer:=2;
+setcolor(0);
+food.x:=5;
+food.y:=5;
+setfillstyle(1,14); {jedlo}
+PieSlice(food.x*10,food.y*10 , 0, 360, 5);
+
+randomize;
+
+repeat
+h:=(max+z-1) mod max;
+had[h].y:=had[z].y;
+had[h].x:=had[z].x;
+had[h].y:=had[z].y;
+had[h].x:=had[z].x;
+case smer of
+     1: had[h].y:=(had[h].y+48-1) mod 48;
+     2: had[h].x:=(had[h].x+64-1) mod 64;
+     3: had[h].y:=(had[h].y+48+1) mod 48;
+     4: had[h].x:=(had[h].x+64+1) mod 64;
+     end;
+setfillstyle(1,12); {hlava}
+PieSlice(had[h].x*10,had[h].y*10 , 0, 360, 5);
+setfillstyle(1,13); {dalsie}
+PieSlice(had[z].x*10,had[z].y*10 , 0, 360, 5);
+z:=h;
+h:=(max+z+l) mod max;
+setfillstyle(1,0); {chvost}
+PieSlice(had[h].x*10,had[h].y*10 , 0, 360, 5);
+
+delay(spd);
+
+jedlo;
+
+if keypressed then
+begin
+   readkey;
+   k:=readkey;
+   case ord(k) of
+        72: smer:=1; {hore}
+        75: smer:=2; {vlavo}
+        80: smer:=3; {dole}
+        77: smer:=4; {vpravo}
+        end;
+end;
+until (k=#27) or (l=1999);
+
+closegraph;
+end.

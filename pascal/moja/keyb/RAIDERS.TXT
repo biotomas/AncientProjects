@@ -1,0 +1,198 @@
+x122          Star Raiders: by Lou DuChez
+
+
+          The Story:   A fleet of invading warships is passing through
+                       your space sector, destroying everything in its
+                       path.  You are the lone defender of the sector,
+                       piloting a craft with warp drive, advanced
+                       defensive shielding, a weapons system with lock-
+                       on potential, and long-range and short-range
+                       scanners.  Your mission is to destroy the
+                       invaders before they can destroy you or any of
+                       your three star bases.
+
+          The Game:    As you play the game, you will be looking out
+                       the ship's main view screen, where you will see
+                       enemy ships randomly moving up and down, left
+                       and right, near and far (if they happen to be in
+                       view).  You have crosshairs to use as a torpedo
+                       sight; when an enemy is in the middle of the
+                       sight, the hairs will switch from white to red
+                       to indicate a weapons lock.  A torpedo fired
+                       while you have a lock will follow the ship
+                       targeted.  (Without a lock, you really don't
+                       have much chance to destroy anything but the
+                       nearest enemies.)  The concentric boxes at the
+                       bottom middle of the screen comprise your
+                       short-range sensor: each dot in the sensor
+                       represents an enemy ship (blue dot = "enemy is
+                       far away", red dot = "enemy is extremely
+                       close").  If the dot is within the inner box,
+                       the ship is visible on the view screen. 
+                       Flanking the box are four indicators: an "M"
+                       (indicating that your short-range map is
+                       functioning), a "T" (to indicate that your
+                       torpedos are functioning); an "S" (if your
+                       shields are working); and a digit to indicate
+                       how many enemies are left in the sector.
+
+          Keys:        Imagine that your ship is controlled by an
+                       aviator's joystick.  That's how to use the
+                       numeric keypad: "Up" to head down, "Down" to
+                       head up; "Left" to go left and "Right" to go
+                       right.  (Notice that the objects on the screen
+                       will go opposite of those directions.)  You may
+                       also use the diagonal keys for combinations. 
+                       "Ins" fires your torpedo; "Del" calls up your
+                       long-range map (see "Warping" below).  Notice
+                       that you can do all your fighting one-handed, so
+                       the other hand will be free to eat with or talk
+                       on the phone.
+
+                       You can "Pause" or "Unpause" the game with the
+                       "P" key. "Q" is your self-destruct / "Quit"
+                       button.
+
+
+
+
+
+
+
+
+
+
+
+
+2          Damage:      Enemies can fire torpedos at you only when they
+                       are on the view screen, and only when they don't
+                       already have a torpedo flying at you.  (Tip:
+                       they usually choose to fire when they are
+                       changing course.)  You may dodge a torpedo by
+                       maneuvering it off the screen; if you don't see
+                       it explode, it didn't hit you.  If you are hit
+                       by an enemy torpedo, the bottom of the screen
+                       will flash red, and your torpedos, short-range
+                       map, or shields might go out.  If your torpedos
+                       go out, your crosshairs disappear (and the "T"
+                       goes blank).  When you lose your short-range
+                       map, the "M" disappears, and the short-range map
+                       "freezes".  When your shields go out, the blue
+                       bars on the sides of the view screen disappear
+                       (as does the "S"), at which point you are
+                       eminently destructible (assume a 20-25% chance
+                       of destruction on any hit).  All this damage may
+                       be repaired by docking with a base (see below).
+
+          Warping:     To enter "Warp", first you need to display your
+                       long-range map (by hitting "Del").  A matrix of
+                       numbers and symbols will appear, each repre-
+                       senting a space sector.  A number indicates how
+                       many enemy craft are in the sector; a dash
+                       indicates an empty sector; and a "B" represents
+                       a base sector.  The sector you are currently in
+                       is displayed in red, and there will initially be
+                       a white box around it.  To move to another
+                       sector, move the box to another sector and hit
+                       "Ins"; a mediocre swirling effect will follow
+                       for about 10 seconds, indicating that you are in
+                       hyperspace.  (To get back out of "Map" mode
+                       without warping, just hit "Del" again.)
+
+          The Fleet:   The fleet starts at the upper left of the screen
+                       and proceeds to the lower right.  Each ship in
+                       the fleet is bent on getting to the lower right
+                       of the screen; if one of your bases happens to
+                       be in the way, it gets destroyed.  (So your two
+                       bases on the sides are relatively easy to
+                       protect; just clip off the "wings" of the
+                       invading fleet.)  Your presence affects fleet
+                       movement: no enemy ships can move into or out of
+                       the sector you are in at the time the fleet
+                       advances.  So enemy ships will try to move
+                       around you, going towards the edges of the
+                       screen if they can.  (So you can sometimes be
+                       responsible for destroying your own base by
+                       forcing enemy ships to go around you and plow
+                       through base sectors.)  When a base is
+                       destroyed, the computer will alert you by making
+                       your screen flash red as if you had yourself
+                       been hit (although you take no damage).
+
+
+
+
+
+
+
+
+
+
+
+
+2          Docking:     Warp to a base sector; you will see a white
+                       circle (your base) approach and draw away
+                       repeatedly.  To dock, you must get the base in
+                       the middle of your sight when it is at its
+                       closest range (note: even if your torpedos are
+                       out, you will have crosshairs while docking, so
+                       you will be able to steer).  Once you have
+                       docked, the base stops moving, all damage is
+                       repaired, and you may resume the fight.
+
+          Scoring:     Basically, the more of them you destroy, the
+                       more points you get (2 points per enemy).  You
+                       get 20 points for each surviving base, and an
+                       additional 20 if you yourself survive.  Each
+                       time you dock costs you 5 points.  You also get
+                       a bonus if the fleet moves quicker than every 80
+                       seconds (5 points for each 10 seconds quicker)
+                       or a deduction of they move slower (5 points for
+                       every 10 seconds).
+
+          Parameters:  When you start RAIDERS.EXE, you are given a
+                       light-bar menu that will let you change the
+                       fleet speed (10 seconds per move to 200 seconds
+                       per move) and the maximum number of enemies per
+                       sector (from 1 to 9).  The defaults are 80
+                       seconds per move and a maximum of 6 enemies per
+                       sector.  You may also enter parameters from the
+                       command line: to set the fleet speed to 75
+                       seconds and the maximum number of enemies per
+                       sector to 7, type
+
+                       RAIDERS R75 E7
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

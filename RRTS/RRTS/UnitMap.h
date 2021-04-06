@@ -1,0 +1,24 @@
+#pragma once
+#include "DirectXGraphics.h"
+#include "Unit.h"
+
+class UnitMap : public Renderable
+{
+	friend class Selector;
+private:
+	Unit**		unit_map; //pos x, pos y of the map
+	UnitList	active_units;
+	int			sizey, sizex;
+	float		tilesize;
+
+public:
+
+	bool AddUnit(int x, int y, Unit* unit);
+	bool ClearUnit(Unit* unit);
+	bool MoveUnit(Unit* unit, int x, int y);
+	bool IsFree(int x, int y);
+
+	virtual void render(LPDIRECT3DDEVICE9 device);
+	UnitMap(int sizex, int sizey, float tilesize);
+	~UnitMap(void);
+};

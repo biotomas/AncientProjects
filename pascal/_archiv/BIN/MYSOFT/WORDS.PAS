@@ -1,0 +1,60 @@
+program RWS;
+uses crt;
+var a,l,z,b,col,n,x:integer;
+k:char;
+begin
+clrscr;
+randomize;
+n:=0;
+x:=0;
+col:=0;
+repeat
+l:=random(3)+3;
+for z:=1 to l do begin
+ a:=random(30)+1;
+ if a=1 then write('wh');
+ if a=2 then write('b');
+ if a=3 then write('c');
+ if a=4 then write('ch');
+ if a=5 then write('d');
+ if a=6 then write('pl');
+ if a=7 then write('f');
+ if a=8 then write('g');
+ if a=9 then write('h');
+ if a=10 then write('j');
+ if a=11 then write('j');
+ if a=12 then write('k');
+ if a=13 then write('l');
+ if a=14 then write('m');
+ if a=15 then write('n');
+ if a=16 then write('ph');
+ if a=17 then write('p');
+ if a=18 then write('q');
+ if a=19 then write('r');
+ if a=20 then write('s');
+ if a=21 then write('t');
+ if a=22 then write('st');
+ if a=23 then write('w');
+ if a=24 then write('x');
+ if a=25 then write('y');
+ if a=26 then write('z');
+ if a=27 then write('bl');
+ if a=28 then write('fl');
+ if a=29 then write('sh');
+ if a=30 then write('th');
+b:=random(6)+1;
+ if b=1 then write('a');
+ if b=2 then write('e');
+ if b=3 then write('i');
+ if b=4 then write('o');
+ if b=5 then write('u');
+ if (b=6) and (a>26) then write('oo');
+ if (b=6) and (a<27) then write('e');
+ end;
+k:=readkey;
+n:=n+1;
+if n=22 then begin n:=0; col:=col+17; end;
+
+writeln;
+until ord(k)=27;
+end.

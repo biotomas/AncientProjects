@@ -1,0 +1,37 @@
+uses graph, crt;
+
+var gd,gm:integer; {GraphicDriver, GraphicMode - mindig integer}
+
+begin
+     initgraph(gd, gm, 'c:\tp\bgi'); 
+     {ezt ird at ahogy neked van a bgi konyvtar}
+     {closegraph  - initgraph parja, a vegen ird oda}
+     
+     line(0,0,300,300); 
+     {feher vonal, 0,0 bal-fenti sarok}
+     
+     circle(200,200, 75); 
+     {kor (kozep-X, kozep-Y, radius(vagy hogymondjak)}
+
+     setcolor( 12 ); 
+     {szin valtoztatas, 0 .. 15 mint a textcolor}
+     
+     rectangle(300,20,500,120); 
+     {negyzet ( bal-fenti sarok x,y jobb-lenti sarok x,y );}
+
+     floodfill (200,205, 15); 
+     {kifesti a dolgokat, mint a pintbrushban. ( x-start, y-start, hatarszin)
+     a hatarszinig festi, azon nem lep at}
+
+     setfillstyle(1, 2);     
+     {bealitsa hogy mijen szinre fessen a floodfill - masodik parameter, az elso mindig 1}
+
+     outtextxy(100, 400, 'Nyomj_egy_gombot');
+     {ki ir valami szoveget a megadott kordinatakra}
+ 	 readkey;
+     floodfill (205,200, 15);
+     outtextxy(100, 400, 'Nyomj_egy_gombot_ismet');
+	 readkey;
+
+     closegraph;
+end.

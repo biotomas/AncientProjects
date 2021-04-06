@@ -1,0 +1,54 @@
+const max=1000;
+type cislo=array[1..max] of byte;
+
+var a,b:cislo;
+    nula,i:word;
+    f:text;
+
+procedure jejedna(var a:cislo);
+var i:word;
+begin
+for i:=2  to max do a[i]:=0;
+a[1]:=1;
+end;
+
+procedure incc(var a:cislo; const b:cislo);
+var p,i:word;
+begin
+p:=0;
+for i:=max downto 1 do
+  begin
+    inc(a[i],b[i]+p);
+    p:=a[i] div 10;
+    a[i]:=a[i] mod 10;
+  end;
+end;
+
+procedure vydel(var a:cislo; b:word);
+var x,p,i:word;
+begin
+p:=0;
+for i:=1 to max do
+  begin
+    x:=(10*p+a[i]);
+    a[i]:=x div b;
+    p:=x mod b;
+  end;
+inc(nula);
+end;
+
+begin
+jejedna(a);
+jejedna(b);
+i:=2;
+nula:=1;
+while nula < max do
+  begin
+  incc(b,a);
+  vydel(a,i);
+  inc(i);
+  end;
+
+write('2.');
+for i:=2 to 900 do write(b[i]);
+end.

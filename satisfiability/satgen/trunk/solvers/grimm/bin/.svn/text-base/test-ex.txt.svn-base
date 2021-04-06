@@ -1,0 +1,5 @@
+# spustaj takto: "grimm_cygwin.exe -f test-ex.txt -L -u"
+>perm1
+7 4 2 6 1 3 5;
+>perm2
+1 2 3 4 5 6 7;

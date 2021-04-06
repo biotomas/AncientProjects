@@ -1,0 +1,65 @@
+K 25
+svn:wc:ra_dav:version-url
+V 72
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler
+END
+Printable.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/satgen/!svn/ver/10/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/Printable.java
+END
+StaticClause.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/satgen/!svn/ver/23/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/StaticClause.java
+END
+Formula.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/satgen/!svn/ver/13/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/Formula.java
+END
+LargeClause.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/LargeClause.java
+END
+Modeler.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/satgen/!svn/ver/9/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/Modeler.java
+END
+ModellingException.java
+K 25
+svn:wc:ra_dav:version-url
+V 95
+/svn/satgen/!svn/ver/6/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/ModellingException.java
+END
+QuadraticClause.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/QuadraticClause.java
+END
+Clause.java
+K 25
+svn:wc:ra_dav:version-url
+V 84
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/Clause.java
+END
+CnfFormula.java
+K 25
+svn:wc:ra_dav:version-url
+V 88
+/svn/satgen/!svn/ver/20/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/CnfFormula.java
+END
+Literal.java
+K 25
+svn:wc:ra_dav:version-url
+V 85
+/svn/satgen/!svn/ver/10/trunk/src/main/java/cz/matfyz/ctrlaltdel/modeler/Literal.java
+END

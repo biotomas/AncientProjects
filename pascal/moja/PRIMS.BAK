@@ -1,0 +1,61 @@
+uses crt; {velmi neoptimalne riesenie}
+const max=5000;
+var a,i,n:word;
+    pc:array[1..max] of word;
+    xpc:array[1..max] of word;
+
+function jepc(x:word):boolean;
+var i:word;
+    b:boolean;
+begin
+  b:=true;
+  for i:=2 to trunc(sqrt(x)) do if x mod i = 0 then
+     begin
+       b:=false;
+       break;
+     end;
+  jepc:=b;
+end;
+
+procedure prvocisla;
+var p,x:word;
+begin
+  p:=1;
+  x:=2;
+  repeat
+    while(not jepc(x)) do inc(x);
+    pc[p]:=x;
+    inc(x);
+    inc(p);
+  until p>max;
+end;
+
+begin
+prvocisla;
+clrscr;
+write('zadajte n = ');
+readln(a);
+n:=a;
+
+if jepc(n) then writeln(n,' je prvocislo.')
+else
+begin
+   repeat
+     i:=1;
+     while n mod pc[i] <> 0 do inc(i);
+     inc(xpc[i]);
+     n:=n div pc[i];
+   until jepc(n);
+i:=1;
+while n<>pc[i] do inc(i);
+inc(xpc[i]);
+
+write(a,' = ');
+for i:=1 to max do
+ if xpc[i]=1 then write(pc[i],' * ') else
+ if xpc[i]>1 then write(pc[i],'^',xpc[i],' * ');
+end;
+gotoxy(wherex-3,wherey);
+writeln('    ');
+readkey;
+end.
