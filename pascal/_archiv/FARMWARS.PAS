@@ -7,24 +7,24 @@ var ext,y,go,cheat,uc,i,gd,gm,cr1,cr2 : integer;
     player,lh1,lh2,lf1,lf2:integer;
     menu,win,ender,sc,asc1,asc2,asc3,asc4,asc5:integer;
     k:char;
-    house1,house2,field1,field2,farmer1,farmer2,gipsy1,gipsy2,
-    usd1,usd2,crop1,crop2,shit1,shit2:integer;
+    house1,house2,field1,field2,farmer1,farmer2,cows1,cows2,
+    usd1,usd2,crop1,crop2,manure1,manure2:integer;
 {UPDATE}
     nopl:integer;
 
 
 procedure test;
 begin
- if shit1<0 then shit1:=0;
- if shit2<0 then shit2:=0;
+ if manure1<0 then manure1:=0;
+ if manure2<0 then manure2:=0;
  if crop1<0 then crop1:=0;
  if crop2<0 then crop2:=0;
  if usd1<0 then usd1:=0;
  if usd2<0 then usd2:=0;
  if farmer1<1 then farmer1:=1;
  if farmer2<1 then farmer2:=1;
- if gipsy1<1 then gipsy1:=1;
- if gipsy2<1 then gipsy2:=1;
+ if cows1<1 then cows1:=1;
+ if cows2<1 then cows2:=1;
  if field1<0 then begin house1:=field1+house1; field1:=0; end;
  if field2<0 then begin house2:=field2+house2; field2:=0; end;
  if (player=1) and (field1+field2>135) then field1:=135-field2;
@@ -112,7 +112,7 @@ if menu=1 then
    gotoxy(50,8);
    readln(name1);
    if name1='big floppy donkey dick' then farmer1:=8;
-   if name1='Emir Kusturica' then gipsy1:=10;
+   if name1='Emir Kusturica' then cows1:=10;
    if name1='i am the lizard king' then begin house1:=100; house2:=40; field1:=120; field2:=10; end;
    if length(name1)>10 then
    begin
@@ -126,7 +126,7 @@ if menu=1 then
    gotoxy(50,12);
    readln(name2);
    if name2='big floppy donkey dick' then farmer2:=8;
-   if name2='Emir Kusturica' then gipsy2:=10;
+   if name2='Emir Kusturica' then cows2:=10;
    if name2='i am the lizard king' then begin house2:=100; house1:=40; field2:=120; field1:=10; end;
    if length(name2)>10 then
    begin
@@ -150,7 +150,7 @@ cleardevice;
    gotoxy(50,8);
    readln(name1);
    if name1='big floppy donkey dick' then farmer1:=8;
-   if name1='Emir Kusturica' then gipsy1:=10;
+   if name1='Emir Kusturica' then cows1:=10;
    if name1='i am the lizard king' then begin house1:=100; house2:=40; field1:=120; field2:=10; end;
    if length(name1)>10 then
    begin
@@ -175,12 +175,12 @@ procedure cards(rcard:integer);
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'Fire on field');
-  outtextxy(((sc*120)-80),450,'   5 Shit');
+  outtextxy(((sc*120)-80),450,'  5 Manure');
   outtextxy(((sc*120)-80),460,'   field -15');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-5; field2:=field2-15; if field2<0 then field2:=0; end;
-       if player=2 then begin shit2:=shit2-5; field1:=field1-15; if field1<0 then field1:=0; end;
+       if player=1 then begin manure1:=manure1-5; field2:=field2-15; if field2<0 then field2:=0; end;
+       if player=2 then begin manure2:=manure2-5; field1:=field1-15; if field1<0 then field1:=0; end;
      end;
  end;
  2:
@@ -191,9 +191,9 @@ procedure cards(rcard:integer);
   outtextxy(((sc*120)-80),460,'mat. -5 mat. +5');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin usd1:=usd1-10; shit1:=shit1+5; shit2:=shit2-5; usd1:=usd1+5; usd2:=usd2-5;
+       if player=1 then begin usd1:=usd1-10; manure1:=manure1+5; manure2:=manure2-5; usd1:=usd1+5; usd2:=usd2-5;
        crop1:=crop1+5; crop2:=crop2-5; test; end;
-       if player=2 then begin usd2:=usd2-10; shit2:=shit2+5; shit1:=shit1-5; usd2:=usd2+5; usd1:=usd1-5;
+       if player=2 then begin usd2:=usd2-10; manure2:=manure2+5; manure1:=manure1-5; usd2:=usd2+5; usd1:=usd1-5;
        crop2:=crop2+5; crop1:=crop1-5; test; end;
      end;
  end;
@@ -213,24 +213,24 @@ procedure cards(rcard:integer);
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'small fire ball');
-  outtextxy(((sc*120)-80),450,'   2 shit');
+  outtextxy(((sc*120)-80),450,'   2 manure');
   outtextxy(((sc*120)-80),460,'  Attacks 3');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-2; field2:=field2-3; test; end;
-       if player=2 then begin shit2:=shit2-5; field1:=field1-3; test; end;
+       if player=1 then begin manure1:=manure1-2; field2:=field2-3; test; end;
+       if player=2 then begin manure2:=manure2-5; field1:=field1-3; test; end;
      end;
  end;
  5:
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'   Plague');
-  outtextxy(((sc*120)-80),450,'   11 shit');
-  outtextxy(((sc*120)-80),460,'enemy gipsy -1');
+  outtextxy(((sc*120)-80),450,'   11 manure');
+  outtextxy(((sc*120)-80),460,'enemy cows -1');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-11; gipsy2:=gipsy2-1; test; end;
-       if player=2 then begin shit2:=shit2-11; gipsy1:=gipsy1-1; test; end;
+       if player=1 then begin manure1:=manure1-11; cows2:=cows2-1; test; end;
+       if player=2 then begin manure2:=manure2-11; cows1:=cows1-1; test; end;
      end;
  end;
  6:
@@ -238,23 +238,23 @@ procedure cards(rcard:integer);
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'    AIDS');
   outtextxy(((sc*120)-80),450,'   15 Usd');
-  outtextxy(((sc*120)-80),460,'farmer&gipsy -1 ');
+  outtextxy(((sc*120)-80),460,'farmer&cows -1 ');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin usd1:=usd1-15; gipsy2:=gipsy2-1; farmer2:=farmer2-1; test; end;
-       if player=2 then begin usd2:=usd2-15; gipsy1:=gipsy1-1; farmer1:=farmer1-1; test; end;
+       if player=1 then begin usd1:=usd1-15; cows2:=cows2-1; farmer2:=farmer2-1; test; end;
+       if player=2 then begin usd2:=usd2-15; cows1:=cows1-1; farmer1:=farmer1-1; test; end;
      end;
  end;
  7:
  begin
   settextstyle(2,0,4);
-  outtextxy(((sc*120)-80),415,'  Rise of roma');
+  outtextxy(((sc*120)-80),415,'  Rise of cows');
   outtextxy(((sc*120)-80),450,'   10 crops');
-  outtextxy(((sc*120)-80),460,'   gipsy +1');
+  outtextxy(((sc*120)-80),460,'   cows +1');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin crop1:=crop1-10; gipsy1:=gipsy1+1; test; end;
-       if player=2 then begin crop2:=crop2-10; gipsy2:=gipsy2+1; test; end;
+       if player=1 then begin crop1:=crop1-10; cows1:=cows1+1; test; end;
+       if player=2 then begin crop2:=crop2-10; cows2:=cows2+1; test; end;
      end;
  end;
  8:
@@ -273,12 +273,12 @@ procedure cards(rcard:integer);
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'Medium Fireball');
-  outtextxy(((sc*120)-80),450,'   6 shit');
+  outtextxy(((sc*120)-80),450,'   6 manure');
   outtextxy(((sc*120)-80),460,' attacks 10');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-6; field2:=field2-10; test; end;
-       if player=2 then begin shit2:=shit2-6; field1:=field1-10; test; end;
+       if player=1 then begin manure1:=manure1-6; field2:=field2-10; test; end;
+       if player=2 then begin manure2:=manure2-6; field1:=field1-10; test; end;
      end;
  end;
  10:
@@ -325,13 +325,13 @@ procedure cards(rcard:integer);
   outtextxy(((sc*120)-80),460,'all -1, all+1');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin usd1:=usd1-25; field2:=field2-1; gipsy2:=gipsy2-1;
-       farmer2:=farmer2-1; house2:=house2-1; shit2:=shit2-1; usd2:=usd2-1; crop2:=crop2-1;
-       field1:=field1+1; gipsy1:=gipsy1+1; farmer1:=farmer1+1; house1:=house1+1; shit1:=shit1+1;
+       if player=1 then begin usd1:=usd1-25; field2:=field2-1; cows2:=cows2-1;
+       farmer2:=farmer2-1; house2:=house2-1; manure2:=manure2-1; usd2:=usd2-1; crop2:=crop2-1;
+       field1:=field1+1; cows1:=cows1+1; farmer1:=farmer1+1; house1:=house1+1; manure1:=manure1+1;
        usd1:=usd1+1; crop1:=crop1+1; test; end;
-       if player=2 then begin usd2:=usd2-25; field1:=field1-1; gipsy1:=gipsy1-1;
-       farmer1:=farmer1-1; house1:=house1-1; shit1:=shit1-1; usd1:=usd1-1; crop1:=crop1-1;
-       field2:=field2+1; gipsy2:=gipsy2+1; farmer2:=farmer2+1; house2:=house2+1; shit2:=shit2+1;
+       if player=2 then begin usd2:=usd2-25; field1:=field1-1; cows1:=cows1-1;
+       farmer1:=farmer1-1; house1:=house1-1; manure1:=manure1-1; usd1:=usd1-1; crop1:=crop1-1;
+       field2:=field2+1; cows2:=cows2+1; farmer2:=farmer2+1; house2:=house2+1; manure2:=manure2+1;
        usd2:=usd2+1; crop2:=crop2+1; test; end;
      end;
  end;
@@ -351,12 +351,12 @@ procedure cards(rcard:integer);
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'  Fertility ');
-  outtextxy(((sc*120)-80),450,'   8 shit');
+  outtextxy(((sc*120)-80),450,'   8 manure');
   outtextxy(((sc*120)-80),460,'  crop +15');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-8; crop1:=crop1+15; test; end;
-       if player=2 then begin shit2:=shit2-8; crop2:=crop2+15; test; end;
+       if player=1 then begin manure1:=manure1-8; crop1:=crop1+15; test; end;
+       if player=2 then begin manure2:=manure2-8; crop2:=crop2+15; test; end;
      end;
 end;
  16:
@@ -375,36 +375,36 @@ end;
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,' Graspingness ');
-  outtextxy(((sc*120)-80),450,'   6 shit');
+  outtextxy(((sc*120)-80),450,'   6 manure');
   outtextxy(((sc*120)-80),460,' enemy usd -10');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-6; usd2:=usd2-10; test; end;
-       if player=2 then begin shit2:=shit2-6; usd1:=usd1-10; test; end;
+       if player=1 then begin manure1:=manure1-6; usd2:=usd2-10; test; end;
+       if player=2 then begin manure2:=manure2-6; usd1:=usd1-10; test; end;
      end;
 end;
  18:
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,' Graspingness ');
-  outtextxy(((sc*120)-80),450,'   6 shit');
+  outtextxy(((sc*120)-80),450,'   6 manure');
   outtextxy(((sc*120)-80),460,'enemy crops -10');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-6; crop2:=crop2-10; test; end;
-       if player=2 then begin shit2:=shit2-6; crop1:=crop1-10; test; end;
+       if player=1 then begin manure1:=manure1-6; crop2:=crop2-10; test; end;
+       if player=2 then begin manure2:=manure2-6; crop1:=crop1-10; test; end;
      end;
 end;
  19:
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,' Graspingness ');
-  outtextxy(((sc*120)-80),450,'   6 shit');
-  outtextxy(((sc*120)-80),460,' enemy shit -10');
+  outtextxy(((sc*120)-80),450,'   6 manure');
+  outtextxy(((sc*120)-80),460,' enemy manure -10');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-6; shit2:=shit2-10; test; end;
-       if player=2 then begin shit2:=shit2-6; shit1:=shit1-10; test; end;
+       if player=1 then begin manure1:=manure1-6; manure2:=manure2-10; test; end;
+       if player=2 then begin manure2:=manure2-6; manure1:=manure1-10; test; end;
      end;
 end;
  20:
@@ -447,24 +447,24 @@ end;
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'  Catapult');
-  outtextxy(((sc*120)-80),450,'   10 shit');
+  outtextxy(((sc*120)-80),450,'   10 manure');
   outtextxy(((sc*120)-80),460,'  attack 17');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-10; field2:=field2-17; test; end;
-       if player=2 then begin shit2:=shit2-10; field1:=field1-17; test; end;
+       if player=1 then begin manure1:=manure1-10; field2:=field2-17; test; end;
+       if player=2 then begin manure2:=manure2-10; field1:=field1-17; test; end;
      end;
 end;
  24:
  begin
   settextstyle(2,0,4);
-  outtextxy(((sc*120)-80),415,'  Buy shit');
+  outtextxy(((sc*120)-80),415,'  Buy manure');
   outtextxy(((sc*120)-80),450,'   7 usd');
-  outtextxy(((sc*120)-80),460,'  shit +10');
+  outtextxy(((sc*120)-80),460,'  manure +10');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin usd1:=usd1-7; shit1:=shit1+10; test; end;
-       if player=2 then begin usd2:=usd2-7; shit2:=shit2+10; test; end;
+       if player=1 then begin usd1:=usd1-7; manure1:=manure1+10; test; end;
+       if player=2 then begin usd2:=usd2-7; manure2:=manure2+10; test; end;
      end;
 end;
  25:
@@ -482,13 +482,13 @@ end;
  26:
  begin
   settextstyle(2,0,4);
-  outtextxy(((sc*120)-80),415,' We pay more');
+  outtextxy(((sc*120)-80),415,'We feed more');
   outtextxy(((sc*120)-80),450,'   17 crops');
-  outtextxy(((sc*120)-80),460,' gipsy -1, +1');
+  outtextxy(((sc*120)-80),460,' cows -1, +1');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin crop1:=crop1-17; gipsy1:=gipsy1+1; gipsy2:=gipsy2-1; test; end;
-       if player=2 then begin crop2:=crop2-17; gipsy2:=gipsy2+1; gipsy1:=gipsy1-1; test; end;
+       if player=1 then begin crop1:=crop1-17; cows1:=cows1+1; cows2:=cows2-1; test; end;
+       if player=2 then begin crop2:=crop2-17; cows2:=cows2+1; cows1:=cows1-1; test; end;
      end;
 end;
  27:
@@ -496,11 +496,11 @@ end;
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'  The Family');
   outtextxy(((sc*120)-80),450,'   16 crops');
-  outtextxy(((sc*120)-80),460,'gipsy,farmer +1');
+  outtextxy(((sc*120)-80),460,'cows,farmer +1');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin crop1:=crop1-16; gipsy1:=gipsy1+1; farmer1:=farmer1+1; test; end;
-       if player=2 then begin crop2:=crop2-16; gipsy2:=gipsy2+1; farmer2:=farmer2+1; test; end;
+       if player=1 then begin crop1:=crop1-16; cows1:=cows1+1; farmer1:=farmer1+1; test; end;
+       if player=2 then begin crop2:=crop2-16; cows2:=cows2+1; farmer2:=farmer2+1; test; end;
      end;
 end;
  28:
@@ -520,23 +520,23 @@ end;
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,' let`s eat');
   outtextxy(((sc*120)-80),450,'   4 crop');
-  outtextxy(((sc*120)-80),460,'  shit +6');
+  outtextxy(((sc*120)-80),460,'  manure +6');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin crop1:=crop1-4; shit1:=shit1+6; test; end;
-       if player=2 then begin crop2:=crop2-4; shit2:=shit2+6; test; end;
+       if player=1 then begin crop1:=crop1-4; manure1:=manure1+6; test; end;
+       if player=2 then begin crop2:=crop2-4; manure2:=manure2+6; test; end;
      end;
 end;
  30:
  begin
   settextstyle(2,0,4);
   outtextxy(((sc*120)-80),415,'SuperShitball');
-  outtextxy(((sc*120)-80),450,'   20 shit');
+  outtextxy(((sc*120)-80),450,'  20 manure');
   outtextxy(((sc*120)-80),460,'  attack 27');
   if uc=1 then begin
       uc:=0;
-       if player=1 then begin shit1:=shit1-20; field2:=field2-27; test; end;
-       if player=2 then begin shit2:=shit2-20; field1:=field1-27; test; end;
+       if player=1 then begin manure1:=manure1-20; field2:=field2-27; test; end;
+       if player=2 then begin manure2:=manure2-20; field1:=field1-27; test; end;
      end;
 end;
 
@@ -550,10 +550,10 @@ procedure cleancards;
 
 procedure round;
   begin
-if player=2 then usd1:=usd1+gipsy1;
-if player=1 then usd2:=usd2+gipsy2;
-if player=2 then shit1:=shit1+farmer1;
-if player=1 then shit2:=shit2+farmer2;
+if player=2 then usd1:=usd1+cows1;
+if player=1 then usd2:=usd2+cows2;
+if player=2 then manure1:=manure1+farmer1;
+if player=1 then manure2:=manure2+farmer2;
 if player=2 then crop1:=crop1+1;
 if player=1 then crop2:=crop2+1;
       if player=2 then begin
@@ -576,8 +576,8 @@ procedure check(check:integer);
   begin
    case check of
    1: begin
-       if (player=1) and (shit1>4) then setcolor(14);
-       if (player=2) and (shit2>4) then setcolor(14);
+       if (player=1) and (manure1>4) then setcolor(14);
+       if (player=2) and (manure2>4) then setcolor(14);
       end;
    2: begin
        if (player=1) and (usd1>9) then setcolor(14);
@@ -588,12 +588,12 @@ procedure check(check:integer);
        if (player=2) and (crop2>8) then setcolor(14);
       end;
    4: begin
-       if (player=1) and (shit1>1) then setcolor(14);
-       if (player=2) and (shit2>1) then setcolor(14);
+       if (player=1) and (manure1>1) then setcolor(14);
+       if (player=2) and (manure2>1) then setcolor(14);
       end;
    5: begin
-       if (player=1) and (shit1>10) then setcolor(14);
-       if (player=2) and (shit2>10) then setcolor(14);
+       if (player=1) and (manure1>10) then setcolor(14);
+       if (player=2) and (manure2>10) then setcolor(14);
       end;
    6: begin
        if (player=1) and (usd1>14) then setcolor(14);
@@ -608,8 +608,8 @@ procedure check(check:integer);
        if (player=2) and (crop2>5) then setcolor(14);
       end;
    9: begin
-       if (player=1) and (shit1>5) then setcolor(14);
-       if (player=2) and (shit2>5) then setcolor(14);
+       if (player=1) and (manure1>5) then setcolor(14);
+       if (player=2) and (manure2>5) then setcolor(14);
       end;
    10: begin
        if (player=1) and (usd1>2) then setcolor(14);
@@ -632,24 +632,24 @@ procedure check(check:integer);
        if (player=2) and (crop2>14) then setcolor(14);
       end;
    15: begin
-       if (player=1) and (shit1>7) then setcolor(14);
-       if (player=2) and (shit2>7) then setcolor(14);
+       if (player=1) and (manure1>7) then setcolor(14);
+       if (player=2) and (manure2>7) then setcolor(14);
       end;
    16: begin
        if (player=1) and (usd1>9) then setcolor(14);
        if (player=2) and (usd2>9) then setcolor(14);
       end;
    17: begin
-       if (player=1) and (shit1>5) then setcolor(14);
-       if (player=2) and (shit2>5) then setcolor(14);
+       if (player=1) and (manure1>5) then setcolor(14);
+       if (player=2) and (manure2>5) then setcolor(14);
       end;
    18: begin
-       if (player=1) and (shit1>5) then setcolor(14);
-       if (player=2) and (shit2>5) then setcolor(14);
+       if (player=1) and (manure1>5) then setcolor(14);
+       if (player=2) and (manure2>5) then setcolor(14);
       end;
    19: begin
-       if (player=1) and (shit1>5) then setcolor(14);
-       if (player=2) and (shit2>5) then setcolor(14);
+       if (player=1) and (manure1>5) then setcolor(14);
+       if (player=2) and (manure2>5) then setcolor(14);
       end;
    20: begin
        if (player=1) and (usd1>14) then setcolor(14);
@@ -664,8 +664,8 @@ procedure check(check:integer);
        if (player=2) and (crop2>14) then setcolor(14);
       end;
    23: begin
-       if (player=1) and (shit1>9) then setcolor(14);
-       if (player=2) and (shit2>9) then setcolor(14);
+       if (player=1) and (manure1>9) then setcolor(14);
+       if (player=2) and (manure2>9) then setcolor(14);
       end;
    24: begin
        if (player=1) and (usd1>6) then setcolor(14);
@@ -692,8 +692,8 @@ procedure check(check:integer);
        if (player=2) and (crop2>3) then setcolor(14);
       end;
    30: begin
-       if (player=1) and (shit1>19) then setcolor(14);
-       if (player=2) and (shit2>19) then setcolor(14);
+       if (player=1) and (manure1>19) then setcolor(14);
+       if (player=2) and (manure2>19) then setcolor(14);
       end;
 
   end;
@@ -817,9 +817,9 @@ if player=2 then begin
 moveto(1,3);
 outtext('Farmer: '); str(farmer1,s); moveto(63,3); outtext(s);
 moveto(1,18);
-outtext('Shit:'); str(shit1,s); moveto(63,18); outtext(s);
+outtext('Manure:'); str(manure1,s); moveto(63,18); outtext(s);
 moveto(1,33);
-outtext('Gipsy:'); str(gipsy1,s); moveto(63,33); outtext(s);
+outtext('Cows:'); str(cows1,s); moveto(63,33); outtext(s);
 moveto(1,48);
 outtext('USD:'); str(usd1,s); moveto(63,48); outtext(s);
 moveto(1,63);
@@ -832,9 +832,9 @@ outtext('Fields:'); str(field1,s); moveto(63,108); outtext(s);
 moveto(545,3);
 outtext('Farmer: '); str(farmer2,s); moveto(610,3); outtext(s);
 moveto(545,18);
-outtext('Shit:'); str(shit2,s); moveto(610,18); outtext(s);
+outtext('Manure:'); str(manure2,s); moveto(610,18); outtext(s);
 moveto(545,33);
-outtext('Gipsy:'); str(gipsy2,s); moveto(610,33); outtext(s);
+outtext('Cows:'); str(cows2,s); moveto(610,33); outtext(s);
 moveto(545,48);
 outtext('USD:'); str(usd2,s); moveto(610,48); outtext(s);
 moveto(545,63);
@@ -1099,14 +1099,14 @@ field1:=20;
 field2:=20;
 farmer1:=2;
 farmer2:=2;
-gipsy1:=2;
-gipsy2:=2;
+cows1:=2;
+cows2:=2;
 usd1:=6;
 usd2:=6;
 crop1:=6;
 crop2:=6;
-shit1:=6;
-shit2:=6;
+manure1:=6;
+manure2:=6;
 ender:=0;
   gd:=detect;
   initgraph(gd,gm,'c:\tp7\bgi');
